@@ -17,3 +17,12 @@ updates:
     labels:
       - dependencies
       - nodejs
+
+  # Maintain dependencies for Python
+  - package-ecosystem: python
+    directory: hello-cdk/
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - python
