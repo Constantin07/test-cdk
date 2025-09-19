@@ -15,11 +15,15 @@ env:
 concurrency:
   group: ci-${{ github.head_ref || github.ref_name }}
 
-permissions: read-all
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-24.04
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
@@ -46,3 +50,13 @@ jobs:
 
       - name: Print CDK version
         run: npx aws-cdk --version
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          role-session-name: AssumeGitHubOIDCRole
+
+      - name: Check AWS authentication
+        run: aws sts get-caller-identity
