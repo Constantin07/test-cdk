@@ -1,13 +1,7 @@
-name: CI
+name: Bootsrap CDK
 
 on:
-  push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 env:
   python_version: 3.13
