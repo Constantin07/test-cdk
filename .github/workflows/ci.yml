@@ -1,4 +1,4 @@
-name: CI
+name: CI pipeline
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
 
 env:
   python_version: 3.13
+  working_directory: hello-cdk
 
 concurrency:
   group: ci-${{ github.head_ref || github.ref_name }}
@@ -20,10 +21,27 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Build and run tests
+        run: echo "Do some build and tests here. TODO"
+
+  cdk-diff:
+    needs: [build]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
@@ -37,7 +55,7 @@ jobs:
       - name: Install pip dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r hello-cdk/requirements.txt
+          pip install -r requirements.txt
 
       - name: Setup NodeJS
         uses: actions/setup-node@v5
@@ -48,9 +66,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Print CDK version
-        run: npx aws-cdk --version
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -58,5 +73,78 @@ jobs:
           role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
           role-session-name: AssumeGitHubOIDCRole
 
-      - name: Check AWS authentication
-        run: aws sts get-caller-identity
+      - name: Plan CDK Deploy to AWS
+        run: |
+          npx cdk diff 2>&1 | tee diff.txt
+
+      - name: Update Summary
+        id: diff_summary
+        run: |
+          echo "### CDK diff" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat diff.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Post CDK diff output in PR Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Read diff file contents
+            var fs = require('fs');
+            process.chdir(process.env.working_directory);
+            var content = fs.readFileSync('diff.txt','utf8');
+
+            // Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            // Find and delete all previous bot comments so PR timeline is kept clean
+            for (const comment of comments) {
+              if (comment.user.type === 'Bot' && comment.body.includes('CDK diff')) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: comment.id,
+                });
+              }
+            }
+
+            const output = `#### CDK diff 📖\`${{ steps.diff_summary.outcome }}\`
+
+            <details><summary>Show CDK diff for Deployment: </summary>
+
+            \`\`\`\n
+            ${content}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+  cdk-deploy:
+    needs: [cdk-diff]
+    runs-on: ubuntu-24.04
+    environment: dev
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
+    defaults:
+      run:
+        working-directory: hello-cdk
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
