@@ -29,6 +29,12 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
 
+      - name: Determine Stack prefix
+        id: stack_prefix
+        uses: ./.github/actions/get-prefix
+        with:
+          branch_name: ${{ github.event.pull_request.head.ref }}
+
       - name: Install pip dependencies
         run: |
           python -m pip install --upgrade pip
@@ -61,9 +67,5 @@ jobs:
         run: |
           echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk destroy --ci --all --force 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk destroy --context stack_prefix=${{ steps.stack_prefix.outputs.prefix }} --ci --all --force 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
-
-      - name: Print branch name
-        run: |
-          echo "Branch name is ${{ github.event.pull_request.head.ref }}"

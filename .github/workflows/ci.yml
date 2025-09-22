@@ -23,13 +23,22 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    outputs:
+      stack_prefix: ${{ steps.stack_prefix.outputs.prefix }}
     steps:
-      - name: Get branch name
-        run: |
-          echo "Branch name is ${{ github.head_ref }}"
-
       - name: Checkout source code
         uses: actions/checkout@v5
+
+      - name: Determine Stack prefix
+        id: stack_prefix
+        uses: ./.github/actions/get-prefix
+        with:
+          branch_name: ${{ github.head_ref || github.ref_name }}
+
+      - name: Output the stack prefix
+        run: |
+          echo "The CDK branch stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
+          echo "::notice title=CDK Stack prefix::CDK Stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
 
       - name: Build and run tests
         run: echo "Do some build and tests here. TODO"
@@ -80,13 +89,13 @@ jobs:
           role-session-name: AssumeGitHubOIDCRole
 
       - name: Synth CDK stacks
-        run: npx cdk synth --ci
+        run: npx cdk synth --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci
 
       - name: Plan CDK Deploy to AWS
         id: diff
         run: |
           set +e
-          npx cdk diff --ci --all --fail --quiet 2>&1 | tee cdk.diff
+          npx cdk diff --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --fail --quiet 2>&1 | tee cdk.diff
           RC=${PIPESTATUS[0]}
           echo "cdk diff exit code: $RC"
 
@@ -166,7 +175,7 @@ jobs:
             });
 
   cdk-deploy:
-    needs: [cdk-diff]
+    needs: [build, cdk-diff]
     runs-on: ubuntu-24.04
     if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     environment: dev
@@ -207,7 +216,7 @@ jobs:
         run: |
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk deploy --ci --all --require-approval=never 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk deploy --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --require-approval=never 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:

@@ -1,0 +1,20 @@
+name: Determine prefix
+description: Reusable action for determining the prefix for CDK stack from Git branch
+
+inputs:
+  branch_name:
+    description: The name of the branch to determine prefix for
+    required: true
+    default: ${{ github.ref }}
+
+outputs:
+  prefix:
+    description: The determined CDK stack prefix based on the branch
+    value: ${{ steps.get_prefix.outputs.prefix }}
+
+runs:
+  using: composite
+  steps:
+    - run: ${{ github.action_path }}/determinePrefix.sh "${{ inputs.branch_name }}"
+      id: get_prefix
+      shell: bash
