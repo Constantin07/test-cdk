@@ -42,6 +42,8 @@ jobs:
     defaults:
       run:
         working-directory: ${{ env.working_directory }}
+    outputs:
+      has_changes: ${{ steps.diff.outputs.has_changes }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
@@ -77,14 +79,38 @@ jobs:
         run: npx cdk synth --ci
 
       - name: Plan CDK Deploy to AWS
-        run: npx cdk diff --ci 2>&1 | tee diff.txt
+        id: diff
+        run: |
+          set +e
+          npx cdk diff --ci --all --fail --quiet 2>&1 | tee cdk.diff
+          RC=${PIPESTATUS[0]}
+          echo "cdk diff exit code: $RC"
+
+          if [[ $RC -eq 0 ]]; then
+            echo "No changes found"
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          elif [[ $RC -eq 1 ]]; then
+            # 1 usually means "diff found", but can be other errors.
+            if grep -E "Number of stacks with differences:|^\s*\[\+|\[\~|\[\-\]" cdk.diff >/dev/null; then
+              echo "has_changes=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            else
+              echo "Unexpected CDK error:"
+              cat cdk.diff
+              exit 2
+            fi
+          else
+            # Any other non-zero is a real error
+            exit $RC
+          fi
 
       - name: Update Summary
         id: diff_summary
         run: |
           echo "### CDK diff" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          cat diff.txt >> $GITHUB_STEP_SUMMARY
+          cat cdk.diff >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Post CDK diff output in PR Comment
@@ -96,7 +122,7 @@ jobs:
             // Read diff file contents
             const fs = require('fs');
             process.chdir(process.env.working_directory);
-            const content = fs.readFileSync('diff.txt', { encoding: 'utf8', flag: 'r' });
+            const content = fs.readFileSync('cdk.diff', { encoding: 'utf8', flag: 'r' });
 
             // Retrieve existing bot comments for the PR
             const { data: comments } = await github.rest.issues.listComments({
@@ -138,6 +164,7 @@ jobs:
   cdk-deploy:
     needs: [cdk-diff]
     runs-on: ubuntu-24.04
+    if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     environment: dev
     permissions:
       contents: read
@@ -146,7 +173,7 @@ jobs:
       AWS_REGION:: ${{ vars.AWS_REGION }}
     defaults:
       run:
-        working-directory: hello-cdk
+        working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
@@ -173,19 +200,19 @@ jobs:
           role-session-name: AssumeGitHubOIDCRole
 
       - name: Run CDK Deploy
-        if: always()
         run: |
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk deploy --all --ci --require-approval=never 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk deploy --ci --all --require-approval=never 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:
-    needs: [cdk-deploy]
+    needs: [build, cdk-deploy]
     runs-on: ubuntu-24.04
+    if: ${{ !cancelled() && (needs.cdk-deploy.result == 'success' || needs.cdk-deploy.result == 'skipped') }}
     defaults:
       run:
-        working-directory: hello-cdk
+        working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
