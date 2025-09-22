@@ -24,6 +24,10 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
+      - name: Get branch name
+        run: |
+          echo "Branch name is ${{ github.head_ref }}"
+
       - name: Checkout source code
         uses: actions/checkout@v5
 
@@ -218,4 +222,4 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Run some tests
-        run: echo "Run some tests against deployed resources. TODO"
+        run: echo "Run some E2E tests against deployed resources. TODO"

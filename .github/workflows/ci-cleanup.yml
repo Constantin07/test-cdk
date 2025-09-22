@@ -1,3 +1,4 @@
+# Clean up resources after PR is merged
 name: CI cleanup
 
 on:
@@ -8,6 +9,7 @@ on:
       - closed
 
 env:
+  python_version: 3.13
   working_directory: hello-cdk
 
 permissions:
@@ -16,14 +18,51 @@ permissions:
 
 jobs:
   cleanup:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-24.04
+    # if: github.event.pull_request.merged == true
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
     defaults:
       run:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
+
+      - name: Install pip dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
+          role-session-name: AssumeGitHubOIDCRole
+
+      - name: List CDK Stacks
+        run: |
+          echo "### CDK list" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          npx cdk list --ci --show-dependencies | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Run CDK Destroy
+        run: |
+          echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          npx cdk destroy --ci --all --force 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Print branch name
         run: |
