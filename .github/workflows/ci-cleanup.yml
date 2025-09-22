@@ -1,0 +1,30 @@
+name: CI cleanup
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+env:
+  working_directory: hello-cdk
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Print branch name
+        run: |
+          echo "Branch name is ${{ github.event.pull_request.head.ref }}"
