@@ -17,7 +17,7 @@ BRANCH_NAME="$(echo "$BRANCH_NAME" \
 echo "Branch name: $BRANCH_NAME"
 
 # For main branch - no prefix
-if [[ "$BRANCH" == "main" ]]; then
+if [[ "$BRANCH_NAME" == "main" ]]; then
   PREFIX=""
 else
   PREFIX="$BRANCH_NAME-"

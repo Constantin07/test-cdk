@@ -51,4 +51,4 @@ class DatabaseStack(Stack):
         )
 
         # Output table ARN
-        CfnOutput(self, id="myTableName", value=dynamodb_table.table_name, export_name="myTableName")
+        CfnOutput(self, id="myTableName", value=dynamodb_table.table_name, export_name=f"{id}-myTableName")

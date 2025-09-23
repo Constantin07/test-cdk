@@ -48,6 +48,8 @@ jobs:
   cdk-diff:
     needs: [build]
     runs-on: ubuntu-24.04
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:
       contents: read
       id-token: write
@@ -180,7 +182,8 @@ jobs:
     needs: [build, cdk-diff]
     runs-on: ubuntu-24.04
     if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
-    environment: dev
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:
       contents: read
       id-token: write
