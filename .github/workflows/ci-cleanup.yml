@@ -19,7 +19,8 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-24.04
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
+    environment: dev-branch
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}
     defaults:
