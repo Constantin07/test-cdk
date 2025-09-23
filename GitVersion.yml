@@ -1,13 +1,14 @@
 ---
 workflow: GitHubFlow/v1
+mode: ContinuousDeployment
 branches:
   main:
-    mode: ContinuousDeployment
     regex: ^main$
     is-release-branch: true
     label: '' # stable on main
   pull-request:
+    # Match "pull/14/merge" (and also "pull/14/head")
+    regex: ^pull\/(?<Number>\d+)\/(merge|head)$
     label: PullRequest{Number}
-    mode: ContinuousDelivery
+    mode: ContinuousDeployment
     increment: Patch
-    regex: ''
