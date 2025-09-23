@@ -1,13 +1,13 @@
 ---
 workflow: GitHubFlow/v1
 mode: ContinuousDeployment
+
 branches:
   main:
     regex: ^main$
     is-release-branch: true
     label: '' # stable on main
-  pull-request:
-    regex: ^!main$
-    label: PullRequest{Number}
-    mode: ContinuousDeployment
     increment: Patch
+
+  pull-request:
+    label: 'PullRequest{Number}'

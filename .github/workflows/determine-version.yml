@@ -33,6 +33,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # GitVersion needs full history
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v4
