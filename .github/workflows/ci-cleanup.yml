@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "### CDK list" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk list --ci --show-dependencies | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk list --context stack_prefix=${{ steps.stack_prefix.outputs.prefix }} --ci --show-dependencies | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Run CDK Destroy
