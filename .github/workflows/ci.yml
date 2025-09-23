@@ -18,12 +18,14 @@ env:
 concurrency:
   group: ci-${{ github.head_ref || github.ref_name }}
 
-permissions:
-  contents: read
-  id-token: write
+permissions: read-all
 
 jobs:
+  determine-version:
+    uses: ./.github/workflows/determine-version.yml
+
   build:
+    needs: [determine-version]
     runs-on: ubuntu-24.04
     outputs:
       stack_prefix: ${{ steps.stack_prefix.outputs.prefix }}

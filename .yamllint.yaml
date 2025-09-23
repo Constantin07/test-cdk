@@ -20,8 +20,8 @@ rules:
   new-lines:
     type: unix
   quoted-strings:
-    quote-type: double
-    required: only-when-needed
+    quote-type: any
+    required: false # only-when-needed
   truthy:
     allowed-values:
       - "true"

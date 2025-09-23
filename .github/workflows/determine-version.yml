@@ -1,0 +1,45 @@
+name: Determine Version
+
+on:
+  workflow_call:
+    inputs:
+      versionSpec:
+        description: The GitVersion version to install
+        required: false
+        type: string
+        default: 6.3.x
+
+    outputs:
+      next_version:
+        description: The determined next version
+        value: ${{ jobs.determine-version.outputs.next_version }}
+
+permissions:
+  contents: read
+
+jobs:
+  determine-version:
+    name: Determine Version
+    runs-on: ubuntu-24.04
+    outputs:
+      next_version: ${{ steps.gitversion.outputs.SemVer }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # GitVersion needs full history
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4
+        with:
+          versionSpec: ${{ inputs.versionSpec }}
+
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v4
+
+      - name: Output the determined version
+        run: |
+          echo "Next Version is ${{ steps.gitversion.outputs.SemVer }}"
+          echo "::notice title=Version::Version is ${{ steps.gitversion.outputs.SemVer }}"
