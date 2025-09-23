@@ -9,6 +9,8 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+
 env:
   python_version: 3.13
   working_directory: hello-cdk
@@ -190,6 +192,12 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.python_version }}
+          cache: pip
 
       - name: Install pip dependencies
         run: |
