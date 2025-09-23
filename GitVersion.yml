@@ -8,5 +8,6 @@ branches:
     label: '' # stable on main
   pull-request:
     label: PullRequest{Number}
+    mode: ContinuousDelivery
     increment: Patch
     regex: ''
