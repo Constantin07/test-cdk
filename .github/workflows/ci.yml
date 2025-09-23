@@ -23,7 +23,32 @@ permissions:
   id-token: write
 
 jobs:
+  determine-version:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # required for semantic-version to work
+
+      - name: Get version
+        id: get_version
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: ""
+          version_format: ${major}.${minor}.${patch}-rc${increment}
+          bump_each_commit: true
+          search_commit_body: true
+
+      - name: Output the determined version
+        run: |
+          echo "Next Version is ${{ steps.get_version.outputs.version }}"
+          echo "::notice title=Version::Version is ${{ steps.get_version.outputs.version }}"
+
   build:
+    needs: [determine-version]
     runs-on: ubuntu-24.04
     outputs:
       stack_prefix: ${{ steps.stack_prefix.outputs.prefix }}
