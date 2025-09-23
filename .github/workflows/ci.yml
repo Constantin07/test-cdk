@@ -18,34 +18,11 @@ env:
 concurrency:
   group: ci-${{ github.head_ref || github.ref_name }}
 
-permissions:
-  contents: read
-  id-token: write
+permissions: read-all
 
 jobs:
   determine-version:
-    runs-on: ubuntu-24.04
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0 # required for semantic-version to work
-
-      - name: Get version
-        id: get_version
-        uses: paulhatch/semantic-version@v5.4.0
-        with:
-          tag_prefix: ""
-          version_format: ${major}.${minor}.${patch}-rc${increment}
-          bump_each_commit: true
-          search_commit_body: true
-
-      - name: Output the determined version
-        run: |
-          echo "Next Version is ${{ steps.get_version.outputs.version }}"
-          echo "::notice title=Version::Version is ${{ steps.get_version.outputs.version }}"
+    uses: ./.github/workflows/determine-version.yml
 
   build:
     needs: [determine-version]

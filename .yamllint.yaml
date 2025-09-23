@@ -20,7 +20,7 @@ rules:
   new-lines:
     type: unix
   quoted-strings:
-    quote-type: double
+    quote-type: any
     required: only-when-needed
   truthy:
     allowed-values:
