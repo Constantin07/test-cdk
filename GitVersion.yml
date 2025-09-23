@@ -7,8 +7,7 @@ branches:
     is-release-branch: true
     label: '' # stable on main
   pull-request:
-    # Match "pull/14/merge" (and also "pull/14/head")
-    regex: ^pull\/(?<Number>\d+)\/(merge|head)$
+    regex: ^!main$
     label: PullRequest{Number}
     mode: ContinuousDeployment
     increment: Patch
