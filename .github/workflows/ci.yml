@@ -15,6 +15,7 @@ on:
 env:
   python_version: 3.13
   working_directory: hello-cdk
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 concurrency:
   group: ci-${{ github.head_ref || github.ref_name }}
@@ -38,7 +39,7 @@ jobs:
         id: stack_prefix
         uses: ./.github/actions/get-prefix
         with:
-          branch_name: ${{ github.head_ref || github.ref_name }}
+          branch_name: ${{ env.BRANCH_NAME}}
 
       - name: Output the stack prefix
         run: |
@@ -232,11 +233,15 @@ jobs:
 
   release:
     needs: [determine-version, run-tests]
-    if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    if: ${{ github.ref_name == 'main' && needs.run-tests.result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
+      - name: Dump refs
+        run: |
+          echo "needs.run-tests.result=${{ needs.run-tests.result }}"
+
       - name: Checkout source code
         uses: actions/checkout@v5
         with:
