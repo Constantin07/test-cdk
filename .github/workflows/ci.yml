@@ -219,7 +219,7 @@ jobs:
 
   release:
     needs: [determine-version, run-tests]
-    if: ${{ github.ref_name == 'main' && needs['run-tests'].result == 'success' }}
+    if: ${{ github.ref_name == 'main' && needs.run-tests.result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
