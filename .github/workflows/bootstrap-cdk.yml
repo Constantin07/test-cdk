@@ -16,6 +16,7 @@ permissions:
 
 jobs:
   deploy:
+    environment: dev
     runs-on: ubuntu-24.04
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}
@@ -28,16 +29,11 @@ jobs:
         with:
           python_version: ${{ env.python_version }}
           working_directory: ${{ env.working_directory }}
+          aws_region: ${{ vars.AWS_REGION }}
+          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Print CDK version
         run: npx aws-cdk --version
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
-          role-session-name: AssumeGitHubOIDCRole
 
       - name: Bootstrap CDK
         run: |
