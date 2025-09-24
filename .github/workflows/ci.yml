@@ -230,6 +230,13 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Dump refs
+        run: |
+          echo "event=${{ github.event_name }}"
+          echo "ref=${{ github.ref }}"
+          echo "ref_name=${{ github.ref_name }}"
+          echo "base_ref=${{ github.base_ref }}"
+
       - name: Checkout source code
         uses: actions/checkout@v5
         with:
