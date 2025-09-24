@@ -223,7 +223,7 @@ jobs:
         run: echo "Run some E2E tests against deployed resources. TODO"
 
   release:
-    needs: [determine-version, run-tests]
+    needs: [run-tests]
     if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
