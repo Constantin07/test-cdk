@@ -163,7 +163,7 @@ jobs:
 
   cdk-deploy:
     needs: [build, cdk-diff]
-    # if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
+    if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:
