@@ -38,7 +38,7 @@ jobs:
         id: stack_prefix
         uses: ./.github/actions/get-prefix
         with:
-          branch_name: ${{ env.BRANCH_NAME}}
+          branch_name: ${{ env.BRANCH_NAME }}
 
       - name: Output the stack prefix
         run: |
@@ -168,7 +168,7 @@ jobs:
 
   cdk-deploy:
     needs: [build, cdk-diff]
-    # if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
+    if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:

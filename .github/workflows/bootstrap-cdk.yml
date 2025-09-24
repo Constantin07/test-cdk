@@ -5,6 +5,7 @@ on:
 
 env:
   python_version: 3.13
+  working_directory: hello-cdk
 
 concurrency:
   group: bootstrap-${{ github.head_ref || github.ref_name }}
@@ -22,25 +23,11 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup tooling
+        uses: ./.github/actions/setup
         with:
-          python-version: ${{ env.python_version }}
-          cache: 'pip'
-
-      - name: Install pip dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r hello-cdk/requirements.txt
-
-      - name: Setup NodeJS
-        uses: actions/setup-node@v5
-        with:
-           node-version-file: '.nvmrc'
-           cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
 
       - name: Print CDK version
         run: npx aws-cdk --version
