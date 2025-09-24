@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
   workflow_dispatch:
 
@@ -49,6 +50,11 @@ jobs:
 
   cdk-diff:
     needs: [build]
+    if: >-
+      ${{
+        contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref != 'refs/heads/main' ||
+        github.ref == 'refs/heads/main'
+      }}
     runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
@@ -203,9 +209,9 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:
-    needs: [build, cdk-deploy]
+    needs: [build, cdk-diff, cdk-deploy]
     runs-on: ubuntu-24.04
-    if: ${{ !cancelled() && (needs.cdk-deploy.result == 'success' || needs.cdk-deploy.result == 'skipped') }}
+    if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
     defaults:
       run:
         working-directory: ${{ env.working_directory }}
@@ -215,3 +221,30 @@ jobs:
 
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
+
+  release:
+    needs: [determine-version, run-tests]
+    runs-on: ubuntu-24.04
+    if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # Fetch full history to include tags
+
+      - name: Get new tag
+        run: echo "NEW_TAG=${{ needs.determine-version.outputs.next_version }}" >> $GITHUB_ENV
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push Release Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
