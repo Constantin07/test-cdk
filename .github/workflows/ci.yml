@@ -168,7 +168,7 @@ jobs:
 
   cdk-deploy:
     needs: [build, cdk-diff]
-    if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
+    # if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:
@@ -217,17 +217,9 @@ jobs:
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
 
-      - name: Dump refs
-        run: |
-          echo "event_name=${{ github.event_name }}"
-          echo "ref=${{ github.ref }}"
-          echo "ref_name=${{ github.ref_name }}"
-          echo "head_ref=${{ github.head_ref }}"
-          echo "base_ref=${{ github.base_ref }}"
-
   release:
     needs: [determine-version, run-tests]
-    if: ${{ github.ref_name == 'main' && needs.run-tests.result == 'success' }}
+    if: ${{ github.ref_name == 'main' && needs['run-tests'].result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
