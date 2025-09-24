@@ -222,6 +222,13 @@ jobs:
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
 
+      - name: Dump refs
+        run: |
+          echo "event=${{ github.event_name }}"
+          echo "ref=${{ github.ref }}"
+          echo "ref_name=${{ github.ref_name }}"
+          echo "base_ref=${{ github.base_ref }}"
+
   release:
     needs: [determine-version, run-tests]
     # if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
@@ -230,13 +237,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Dump refs
-        run: |
-          echo "event=${{ github.event_name }}"
-          echo "ref=${{ github.ref }}"
-          echo "ref_name=${{ github.ref_name }}"
-          echo "base_ref=${{ github.base_ref }}"
-
       - name: Checkout source code
         uses: actions/checkout@v5
         with:
