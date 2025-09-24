@@ -223,8 +223,9 @@ jobs:
         run: echo "Run some E2E tests against deployed resources. TODO"
 
   release:
-    needs: [run-tests]
-    if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    needs: [determine-version, run-tests]
+    # if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    if: ${{ needs.run-tests.result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -237,7 +238,7 @@ jobs:
       - name: Get new tag
         run: echo "NEW_TAG=${{ needs.determine-version.outputs.next_version }}" >> $GITHUB_ENV
 
-      - name: Set up Git
+      - name: Set up git user
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -246,5 +247,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git tag $NEW_TAG
-          git push origin $NEW_TAG
+          git tag "$NEW_TAG"
+          git push origin tag "$NEW_TAG"
