@@ -215,3 +215,30 @@ jobs:
 
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
+
+  release:
+    needs: [determine-version, run-tests]
+    runs-on: ubuntu-24.04
+    if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # Fetch full history to include tags
+
+      - name: Get new tag
+        run: echo "NEW_TAG=${{ needs.determine-version.outputs.next_version }}" >> $GITHUB_ENV
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push Release Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
