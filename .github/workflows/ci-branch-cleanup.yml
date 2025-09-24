@@ -41,13 +41,8 @@ jobs:
         with:
           python_version: ${{ env.python_version }}
           working_directory: ${{ env.working_directory }}
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-region: ${{ vars.AWS_REGION }}
-          role-to-assume: ${{ vars.AWS_OIDC_ROLE }}
-          role-session-name: AssumeGitHubOIDCRole
+          aws_region: ${{ vars.AWS_REGION }}
+          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: List CDK Stacks
         run: |
