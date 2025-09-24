@@ -211,7 +211,7 @@ jobs:
 
   run-tests:
     needs: [build, cdk-diff, cdk-deploy]
-    if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
+    if: ${{ !cancelled() && needs['cdk-diff'].result == 'success' }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -224,7 +224,7 @@ jobs:
         run: echo "Run some E2E tests against deployed resources. TODO"
 
   test:
-    needs: [determine-version, run-tests]
+    needs: [determine-version, build]
     runs-on: ubuntu-24.04
     steps:
       - name: Dump refs
