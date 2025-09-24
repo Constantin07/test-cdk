@@ -223,6 +223,10 @@ jobs:
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
 
+  test:
+    needs: [determine-version, run-tests]
+    runs-on: ubuntu-24.04
+    steps:
       - name: Dump refs
         run: |
           echo "event_name=${{ github.event_name }}"
@@ -230,10 +234,11 @@ jobs:
           echo "ref_name=${{ github.ref_name }}"
           echo "head_ref=${{ github.head_ref }}"
           echo "base_ref=${{ github.base_ref }}"
+          echo "run-tests-result=${{ needs['run-tests'].result}}"
 
   release:
     needs: [determine-version, run-tests]
-    if: ${{ github.ref_name == 'main' && needs.run-tests.result == 'success' }}
+    if: ${{ github.ref_name == 'main' && needs['run-tests'].result == 'success' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
