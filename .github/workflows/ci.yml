@@ -173,8 +173,8 @@ jobs:
 
   cdk-deploy:
     needs: [build, cdk-diff]
-    runs-on: ubuntu-24.04
     if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
+    runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
     permissions:
       contents: read
@@ -210,8 +210,8 @@ jobs:
 
   run-tests:
     needs: [build, cdk-diff, cdk-deploy]
-    runs-on: ubuntu-24.04
     if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
+    runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: ${{ env.working_directory }}
@@ -224,8 +224,8 @@ jobs:
 
   release:
     needs: [determine-version, run-tests]
-    runs-on: ubuntu-24.04
     if: ${{ github.ref == 'refs/heads/main' && needs.run-tests.result == 'success' }}
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
