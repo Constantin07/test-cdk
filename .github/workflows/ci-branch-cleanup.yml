@@ -1,5 +1,5 @@
-# Clean up resources after PR is merged
-name: CI cleanup
+# Clean up branch resources after PR is merged
+name: CI branch cleanup
 
 on:
   pull_request:
