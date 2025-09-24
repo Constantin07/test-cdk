@@ -211,7 +211,7 @@ jobs:
   run-tests:
     needs: [build, cdk-diff, cdk-deploy]
     runs-on: ubuntu-24.04
-    if: ${{ !cancelled() && (needs.cdk-deploy.result == 'success' || needs.cdk-deploy.result == 'skipped') }}
+    if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
     defaults:
       run:
         working-directory: ${{ env.working_directory }}
