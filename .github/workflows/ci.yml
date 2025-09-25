@@ -9,10 +9,9 @@ on:
     branches:
       - main
 
-  workflow_dispatch:
-
 env:
   python_version: 3.13
+  git_chglog_version: 0.15.4
   working_directory: hello-cdk
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
@@ -233,3 +232,25 @@ jobs:
         run: |
           git tag "$NEW_TAG"
           git push origin tag "$NEW_TAG"
+
+      - name: Install git-chglog
+        run: |
+          wget https://github.com/git-chglog/git-chglog/releases/download/v${{ env.git_chglog_version }}/git-chglog_${{ env.git_chglog_version }}_linux_amd64.tar.gz
+          tar -xzf git-chglog_${{ env.git_chglog_version }}_linux_amd64.tar.gz -C /usr/local/bin
+
+      - name: Generate Changelog
+        run: git-chglog -o CHANGELOG.md "..$NEW_TAG"
+
+      - name: Show Changelog
+        run: cat CHANGELOG.md
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$NEW_TAG" \
+            --title="Release $NEW_TAG" \
+            --repo="$GITHUB_REPOSITORY" \
+            --notes-file=CHANGELOG.md \
+            --latest \
+            --verify-tag

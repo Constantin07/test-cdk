@@ -1,0 +1,27 @@
+# MacOS
+.DS_Store
+
+# NodeJS
+node_modules
+build/*.js
+test/*.js
+
+# Optional npm cache directory
+.npm
+
+# Python
+**/venv
+__pycache__/
+*.py[cod]
+.coverage
+coverage/**
+
+# Log Files
+/*.log
+
+# Ignore Changelog
+CHANGELOG.md
+
+# VSCode
+.vscode
+.idea/
