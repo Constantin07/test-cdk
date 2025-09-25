@@ -54,6 +54,11 @@ jobs:
 
   cdk-diff:
     needs: [build]
+    if: >-
+      ${{
+        (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
+         github.ref_name == 'main'
+      }}
     runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
