@@ -8,6 +8,11 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
 
 env:
   python_version: 3.13
@@ -49,6 +54,11 @@ jobs:
 
   cdk-diff:
     needs: [build]
+    if: >-
+      ${{
+        (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
+         github.ref_name == 'main'
+      }}
     runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
@@ -233,16 +243,14 @@ jobs:
           git tag "$NEW_TAG"
           git push origin tag "$NEW_TAG"
 
-      - name: Install git-chglog
-        run: |
-          wget https://github.com/git-chglog/git-chglog/releases/download/v${{ env.git_chglog_version }}/git-chglog_${{ env.git_chglog_version }}_linux_amd64.tar.gz
-          tar -xzf git-chglog_${{ env.git_chglog_version }}_linux_amd64.tar.gz -C /usr/local/bin
-
-      - name: Generate Changelog
-        run: git-chglog -o CHANGELOG.md "..$NEW_TAG"
-
-      - name: Show Changelog
-        run: cat CHANGELOG.md
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --verbose
+        env:
+          OUTPUT: CHANGELOG.md
+          GITHUB_REPO: ${{ github.repository }}
 
       - name: Create GitHub Release
         env:
