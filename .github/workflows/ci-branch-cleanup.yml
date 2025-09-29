@@ -63,6 +63,7 @@ jobs:
             npx cdk list --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci | awk 'NF' | \
             { if [ -n "$STACKS_EXCLUDE_FILTER" ]; then grep -E -v "$STACKS_EXCLUDE_FILTER" || true; else cat; fi; }
           )
+          echo "${STACKS[@]}"
 
           echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
