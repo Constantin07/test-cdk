@@ -262,6 +262,7 @@ jobs:
 
       - name: Run CDK Deploy
         run: |
+          set -euo pipefail
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           npx cdk deploy --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
