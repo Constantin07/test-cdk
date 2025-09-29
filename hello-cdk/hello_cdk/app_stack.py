@@ -21,7 +21,7 @@ class AppStack(Stack):
         db_stack_prefix = self.node.try_get_context("stack_prefix") or "DatabaseStack"
 
         # Import output from another stack
-        table_name = Fn.import_value(f"{db_stack_prefix}-myTableName")
+        table_name = Fn.import_value(f"{db_stack_prefix}myTableName")
 
         # Example SQS resource
         queue = sqs.Queue(
