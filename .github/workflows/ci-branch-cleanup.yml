@@ -60,13 +60,13 @@ jobs:
 
           # Get all stacks (remove empty lines)
           mapfile -t STACKS < <(
-            npx cdk list --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci | awk 'NF' | \
+            npx cdk list --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci | awk 'NF' | \
             { if [ -n "$STACKS_EXCLUDE_FILTER" ]; then grep -E -v "$STACKS_EXCLUDE_FILTER" || true; else cat; fi; }
           )
 
           echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
-            npx cdk destroy --context stack_prefix=${{ steps.stack_prefix.outputs.prefix }} "$stack" --ci --all --force | tee -a "$GITHUB_STEP_SUMMARY"
+            npx cdk destroy --context stack_prefix="${{ steps.stack_prefix.outputs.prefix }}" "$stack" --ci --force | tee -a "$GITHUB_STEP_SUMMARY"
           done
           echo '```' >> $GITHUB_STEP_SUMMARY

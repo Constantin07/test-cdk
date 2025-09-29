@@ -85,13 +85,13 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Synth CDK stacks
-        run: npx cdk synth --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci
+        run: npx cdk synth --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci
 
       - name: Plan CDK Deploy to AWS
         id: diff
         run: |
           set +e
-          npx cdk diff --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --fail --quiet | tee cdk.diff
+          npx cdk diff --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci --all --fail --quiet | tee cdk.diff
           RC=${PIPESTATUS[0]}
           echo "cdk diff exit code: $RC"
 
@@ -200,7 +200,7 @@ jobs:
 
           # Get all stacks (remove empty lines)
           mapfile -t STACKS < <(
-            npx cdk list --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci | awk 'NF'
+            npx cdk list --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci | awk 'NF'
           )
 
           if [ "${#STACKS[@]}" -eq 0 ]; then
@@ -217,7 +217,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
             set +e
-            npx cdk drift --context stack_prefix=${{ needs.build.outputs.stack_prefix }} "$stack" --ci --fail | tee -a "$GITHUB_STEP_SUMMARY"
+            npx cdk drift --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" "$stack" --ci --fail | tee -a "$GITHUB_STEP_SUMMARY"
             RC=$?
             set -e
             if [[ $RC -eq 1 ]]; then
@@ -264,7 +264,7 @@ jobs:
         run: |
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk deploy --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk deploy --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:
