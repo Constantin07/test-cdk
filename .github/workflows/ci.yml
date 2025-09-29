@@ -170,8 +170,73 @@ jobs:
               body: output
             });
 
-  cdk-deploy:
+  cdk-drift:
     needs: [build, cdk-diff]
+    runs-on: ubuntu-24.04
+    environment: dev-branch
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          aws_region: ${{ vars.AWS_REGION }}
+          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
+
+      - name: Run CDK Drift Detection
+        run: |
+          set -euo pipefail
+
+          # Get all stacks (remove empty lines)
+          mapfile -t STACKS < <(
+            npx cdk list --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci | awk 'NF'
+          )
+
+          if [ "${#STACKS[@]}" -eq 0 ]; then
+            echo "No stacks found via 'cdk ls'."
+            exit 0
+          fi
+
+          echo "Found ${#STACKS[@]} stack(s):"
+          for s in "${STACKS[@]}"; do echo "$s"; done
+
+          DRIFTED=0
+
+          echo "### CDK drift" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          for stack in "${STACKS[@]}"; do
+            set +e
+            npx cdk drift --context stack_prefix=${{ needs.build.outputs.stack_prefix }} "$stack" --ci --fail | tee -a "$GITHUB_STEP_SUMMARY"
+            RC=$?
+            set -e
+            if [[ $RC -eq 1 ]]; then
+              DRIFTED=$((DRIFTED+1))
+            elif [[ $RC -ne 0 ]]; then
+              echo "Error checking drift for stack $stack, cdk drift exit code: $RC"
+              exit $RC
+            fi
+          done
+          echo "Total drifted stacks found: $DRIFTED"
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Print warning message if any drifted stacks found
+          if [[ $RC -gt 0 ]]; then
+            echo "::warning ::DRIFTED stacks found: $DRIFTED"
+          fi
+
+  cdk-deploy:
+    needs: [build, cdk-diff, cdk-drift]
     if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
