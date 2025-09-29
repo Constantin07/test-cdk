@@ -18,10 +18,10 @@ class AppStack(Stack):
         # Set the CloudFormation template description
         self.template_options.description = "Application Stack"
 
-        db_stack_prefix = self.node.try_get_context("stack_prefix") or "DatabaseStack"
+        db_stack_prefix = self.node.try_get_context("stack_prefix") + "DatabaseStack" or "DatabaseStack"
 
         # Import output from another stack
-        table_name = Fn.import_value(f"{db_stack_prefix}myTableName")
+        table_name = Fn.import_value(f"{db_stack_prefix}-myTableName")
 
         # Example SQS resource
         queue = sqs.Queue(
@@ -60,7 +60,7 @@ class AppStack(Stack):
                 exports.handler = async function(event) {
                     return {
                         statusCode: 200,
-                        body: JSON.stringify(`Hello CDK! Table ARN is: ${tableName}`),
+                        body: JSON.stringify(`Hello CDK App! Table name is: ${tableName}`),
                     };
                 };
                 """
