@@ -60,7 +60,7 @@ jobs:
 
           # Get all stacks (remove empty lines)
           mapfile -t STACKS < <(
-            npx cdk list --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci | awk 'NF' | \
+            npx cdk list --context stack_prefix="${{ steps.stack_prefix.outputs.prefix }}" --ci | awk 'NF' | \
             { if [ -n "$STACKS_EXCLUDE_FILTER" ]; then grep -E -v "$STACKS_EXCLUDE_FILTER" || true; else cat; fi; }
           )
           echo "${STACKS[@]}"
