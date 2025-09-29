@@ -12,6 +12,9 @@ class NetworkStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
+        # Set the CloudFormation template description
+        self.template_options.description = "Networking Stack"
+
         vpc_cidr = self.node.try_get_context("vpc_cdr") or "10.0.0.0/16"
 
         # Create VPC
