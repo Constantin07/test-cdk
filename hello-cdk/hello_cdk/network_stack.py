@@ -13,7 +13,7 @@ class NetworkStack(Stack):
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
-        self.template_options.description = "Networking Stack"
+        self.template_options.description = "Networking Stack (Shared)"
 
         vpc_cidr = self.node.try_get_context("vpc_cdr") or "10.0.0.0/16"
 

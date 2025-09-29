@@ -91,7 +91,7 @@ jobs:
         id: diff
         run: |
           set +e
-          npx cdk diff --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --fail --quiet 2>&1 | tee cdk.diff
+          npx cdk diff --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --fail --quiet | tee cdk.diff
           RC=${PIPESTATUS[0]}
           echo "cdk diff exit code: $RC"
 
@@ -199,7 +199,7 @@ jobs:
         run: |
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk deploy --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --require-approval=never 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk deploy --context stack_prefix=${{ needs.build.outputs.stack_prefix }} --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:
