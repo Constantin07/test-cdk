@@ -14,6 +14,9 @@ class DatabaseStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
+        # Set the CloudFormation template description
+        self.template_options.description = "Database Stack"
+
         # Create a new DynamoDB table
         dynamodb_table = dynamodb.Table(
             self,
