@@ -227,11 +227,11 @@ jobs:
               exit $RC
             fi
           done
-          echo "Total drifted stacks found: $DRIFTED"
+          echo "Total drifted stacks found: $DRIFTED" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
           # Print warning message if any drifted stacks found
-          if [[ $RC -gt 0 ]]; then
+          if [[ $DRIFTED -gt 0 ]]; then
             echo "::warning ::DRIFTED stacks found: $DRIFTED"
           fi
 
