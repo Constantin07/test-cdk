@@ -56,7 +56,7 @@ jobs:
           set -euo pipefail
 
           # Stack to exclude (shared resources)
-          STACKS_EXCLUDE_FILTER="NetworkStack"
+          STACKS_EXCLUDE_FILTER='(^NetworkStack|^DatabaseStack|^AppStack)'
 
           # Get all stacks (remove empty lines)
           mapfile -t STACKS < <(
