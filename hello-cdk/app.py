@@ -10,7 +10,7 @@ from hello_cdk.app_stack import AppStack
 
 app = cdk.App()
 
-# Usage: cdk deploy -c stack_prefix="feat-123"
+# Usage: cdk deploy -c stack_prefix="feat-123-branch-name-"
 stack_prefix = app.node.try_get_context("stack_prefix") or ""
 
 # Network stack is shared with other branch stacks
@@ -20,6 +20,7 @@ app_stack = AppStack(app, stack_prefix + "AppStack")
 
 # Add dependecy so Network stack is deployet first
 db_stack.add_dependency(network_stack)
+app_stack.add_dependency(network_stack)
 app_stack.add_dependency(db_stack)
 
 # Default tags
