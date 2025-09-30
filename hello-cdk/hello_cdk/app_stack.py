@@ -18,7 +18,8 @@ class AppStack(Stack):
         # Set the CloudFormation template description
         self.template_options.description = "Application Stack"
 
-        db_stack_prefix = self.node.try_get_context("stack_prefix") + "DatabaseStack" or "DatabaseStack"
+        # Get the DB stack prefix from context
+        db_stack_prefix = f"{self.node.try_get_context("stack_prefix")}DatabaseStack"
 
         # Import output from another stack
         table_name = Fn.import_value(f"{db_stack_prefix}-myTableName")
