@@ -19,7 +19,7 @@ updates:
       - nodejs
 
   # Maintain dependencies for Python
-  - package-ecosystem: python
+  - package-ecosystem: pip
     directory: hello-cdk/
     schedule:
       interval: weekly

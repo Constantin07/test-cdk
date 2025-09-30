@@ -20,6 +20,7 @@ app_stack = AppStack(app, stack_prefix + "AppStack")
 
 # Add dependecy so Network stack is deployet first
 db_stack.add_dependency(network_stack)
+app_stack.add_dependency(network_stack)
 app_stack.add_dependency(db_stack)
 
 # Default tags
