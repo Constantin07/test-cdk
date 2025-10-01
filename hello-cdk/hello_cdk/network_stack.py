@@ -10,6 +10,7 @@ class NetworkStack(Stack):
     VPC_ID = "Vpc" # Logical ID
 
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
+        config = kwargs.pop("config")
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
