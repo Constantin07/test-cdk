@@ -37,7 +37,7 @@ class AppStack(Stack):
         log_group = logs.LogGroup(
             self,
             id = "LogGroup",
-            log_group_name = f'/aws/lambda/{id}-LogGroup' , # Phisial ID
+            log_group_name = f'/aws/lambda/{id}-LogGroup' , # Physical ID
             retention = logs.RetentionDays.ONE_DAY,
             log_group_class = logs.LogGroupClass.STANDARD,
             removal_policy = RemovalPolicy.DESTROY
@@ -48,8 +48,8 @@ class AppStack(Stack):
             self,
             id = "LambdaFunction",
             function_name = f"{id}-LambdaFunction",
-            runtime = _lambda.Runtime.NODEJS_20_X, # Provide any supported Node.js runtime
-            architecture = _lambda.Architecture.ARM_64, # Use ARM 64 architecture
+            runtime = _lambda.Runtime.NODEJS_20_X,
+            architecture = _lambda.Architecture.ARM_64,
             handler = "index.handler",
             log_group = log_group, # Associate the Log Group with the Lambda function
             environment = {
