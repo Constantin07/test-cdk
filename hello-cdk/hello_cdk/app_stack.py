@@ -13,13 +13,14 @@ from constructs import Construct
 
 class AppStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
+        config = kwargs.pop("config")
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
         self.template_options.description = "Application Stack"
 
         # Get the DB stack prefix from context
-        db_stack_prefix = f"{self.node.try_get_context("stack_prefix")}DatabaseStack"
+        db_stack_prefix = f"{self.node.try_get_context("stack_prefix") or ""}DatabaseStack"
 
         # Import output from another stack
         table_name = Fn.import_value(f"{db_stack_prefix}-myTableName")

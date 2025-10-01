@@ -1,0 +1,8 @@
+# Environment configuration for dev
+account: '710782875474'
+region: eu-west-1
+
+default_tags:
+  application: hello
+  environment-type: nlv
+  cost-centre: tbd
