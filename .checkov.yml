@@ -1,0 +1,16 @@
+block-list-secret-scan: []
+framework:
+  - cloudformation
+  # - cdk # Paid feature
+mask: []
+output:
+  - cli
+  - sarif
+  - github_failed_only
+secrets-scan-file-type: []
+summary-position: top
+quiet: true
+soft-fail: true
+compact: true
+skip-path: []
+skip-check: []
