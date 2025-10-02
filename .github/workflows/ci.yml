@@ -29,8 +29,7 @@ jobs:
   determine-version:
     uses: ./.github/workflows/determine-version.yml
 
-  build:
-    needs: [determine-version]
+  get-stack-prefix:
     runs-on: ubuntu-24.04
     outputs:
       stack_prefix: ${{ steps.stack_prefix.outputs.prefix }}
@@ -49,11 +48,17 @@ jobs:
           echo "The CDK branch stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
           echo "::notice title=CDK Stack prefix::CDK Stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
 
+  build:
+    needs: [determine-version]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
       - name: Build and run tests
         run: echo "Do some build and tests here. TODO"
 
   cdk-unit-test:
-    needs: [determine-version]
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -72,8 +77,44 @@ jobs:
       - name: Run CDK Unit Tests
         run: pytest -v
 
+  security-scan:
+    needs: [ get-stack-prefix ]
+    runs-on: ubuntu-24.04
+    environment: dev-branch
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          aws_region: ${{ vars.AWS_REGION }}
+          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
+
+      - name: Run CDK synth
+        run: |
+          npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
+
+      - name: Run Checkov action
+        uses: bridgecrewio/checkov-action@master
+        with:
+          config_file: .checkov.yml
+          directory: ./hello-cdk/cdk.out
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+
   cdk-diff:
-    needs: [build, cdk-unit-test]
+    needs: [get-stack-prefix, build, cdk-unit-test, security-scan]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
@@ -105,13 +146,13 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Synth CDK stacks
-        run: npx cdk synth --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci
+        run: npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
 
       - name: Plan CDK Deploy to AWS
         id: diff
         run: |
           set +e
-          npx cdk diff --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci --all --fail --quiet | tee cdk.diff
+          npx cdk diff --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci --all --fail --quiet | tee cdk.diff
           RC=${PIPESTATUS[0]}
           echo "cdk diff exit code: $RC"
 
@@ -191,7 +232,7 @@ jobs:
             });
 
   cdk-drift:
-    needs: [build, cdk-diff]
+    needs: [get-stack-prefix, cdk-diff]
     runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
@@ -220,7 +261,7 @@ jobs:
 
           # Get all stacks (remove empty lines)
           mapfile -t STACKS < <(
-            npx cdk list --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci | awk 'NF'
+            npx cdk list --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci | awk 'NF'
           )
 
           if [ "${#STACKS[@]}" -eq 0 ]; then
@@ -237,7 +278,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
             set +e
-            npx cdk drift --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" "$stack" --ci --fail 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+            npx cdk drift --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" "$stack" --ci --fail 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
             RC=$?
             set -e
             if [[ $RC -eq 1 ]]; then
@@ -256,7 +297,7 @@ jobs:
           fi
 
   cdk-deploy:
-    needs: [build, cdk-diff, cdk-drift]
+    needs: [get-stack-prefix, cdk-diff, cdk-drift]
     if: ${{ needs.cdk-diff.outputs.has_changes == 'true' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'dev' || 'dev-branch' }}
@@ -285,11 +326,11 @@ jobs:
           set -euo pipefail
           echo "### CDK deploy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          npx cdk deploy --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
+          npx cdk deploy --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   run-tests:
-    needs: [build, cdk-diff, cdk-deploy]
+    needs: [get-stack-prefix, cdk-diff, cdk-deploy]
     if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
     runs-on: ubuntu-24.04
     defaults:
