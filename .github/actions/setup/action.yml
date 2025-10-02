@@ -6,6 +6,10 @@ inputs:
     description: Python version to setup
     required: false
     default: 3.13
+  install_dev_dependencies:
+    description: Whether to install dev dependencies from requirements-dev.txt
+    required: false
+    default: "false"
   working_directory:
     description: Working directory
     required: false
@@ -13,10 +17,11 @@ inputs:
   aws_region:
     description: AWS region to configure AWS credentials
     required: false
-    default: us-east-1
+    default: eu-west-1
   role_to_assume:
     description: AWS IAM Role to assume for AWS credentials configuration
-    required: true
+    required: false
+    default: none
 
 runs:
   using: composite
@@ -34,6 +39,13 @@ runs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Install pip dev dependencies
+      if: ${{ inputs.install_dev_dependencies == 'true' }}
+      working-directory: ${{ inputs.working_directory }}
+      shell: bash
+      run: |
+        pip install -r requirements-dev.txt
+
     - name: Setup NodeJS
       uses: actions/setup-node@v5
       with:
@@ -46,6 +58,7 @@ runs:
       run: npm install
 
     - name: Configure AWS credentials
+      if: ${{ inputs.role_to_assume != 'none' }}
       uses: aws-actions/configure-aws-credentials@v5
       with:
         aws-region: ${{ inputs.aws_region }}
