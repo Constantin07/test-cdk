@@ -1,0 +1,17 @@
+block-list-secret-scan: []
+framework:
+  - cloudformation
+  # - cdk # Paid feature
+mask: []
+output:
+  - cli
+  - sarif
+  - github_failed_only
+secrets-scan-file-type: []
+summary-position: top
+quiet: true
+soft-fail: true
+compact: true
+skip-path: []
+skip-check:
+  - CKV_AWS_116 # AWS Lambda function doesn't require a Dead Letter Queue(DLQ)
