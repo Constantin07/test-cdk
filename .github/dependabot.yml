@@ -23,6 +23,9 @@ updates:
     directory: hello-cdk/
     schedule:
       interval: weekly
+    allow:
+      - dependency-type: "all"  # includes dev deps too
+    open-pull-requests-limit: 10
     labels:
       - dependencies
       - python

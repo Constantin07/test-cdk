@@ -52,8 +52,28 @@ jobs:
       - name: Build and run tests
         run: echo "Do some build and tests here. TODO"
 
+  cdk-unit-test:
+    needs: [determine-version]
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          install_dev_dependencies: true
+
+      - name: Run CDK Unit Tests
+        run: pytest -v
+
   cdk-diff:
-    needs: [build]
+    needs: [build, cdk-unit-test]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
@@ -217,7 +237,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
             set +e
-            npx cdk drift --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" "$stack" --ci --fail | tee -a "$GITHUB_STEP_SUMMARY"
+            npx cdk drift --context stack_prefix="${{ needs.build.outputs.stack_prefix }}" "$stack" --ci --fail 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
             RC=$?
             set -e
             if [[ $RC -eq 1 ]]; then
