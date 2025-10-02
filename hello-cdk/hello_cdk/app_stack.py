@@ -32,6 +32,8 @@ class AppStack(Stack):
             queue_name = f"{id}-SQSQueue",
             retention_period = Duration.days(3),
             visibility_timeout = Duration.seconds(120),
+            encryption = sqs.QueueEncryption.SQS_MANAGED,
+            enforce_ssl = True
         )
 
         # Create a Log Group for Lambda function

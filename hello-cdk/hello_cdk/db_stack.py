@@ -37,6 +37,7 @@ class DatabaseStack(Stack):
             # read_capacity=5,
             # write_capacity=5,
             encryption = dynamodb.TableEncryption.AWS_MANAGED,
+            point_in_time_recovery = True,
             deletion_protection = False,            # NOT recommended for production code
             removal_policy = RemovalPolicy.DESTROY  # NOT recommended for production code
         )

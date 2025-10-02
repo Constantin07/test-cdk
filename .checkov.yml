@@ -13,4 +13,5 @@ quiet: true
 soft-fail: true
 compact: true
 skip-path: []
-skip-check: []
+skip-check:
+  - CKV_AWS_116 # AWS Lambda function doesn't require a Dead Letter Queue(DLQ)
