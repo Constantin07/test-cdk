@@ -5,6 +5,11 @@ set -e
 # Get the branch name, stripping out refs/heads/
 BRANCH_NAME=$(echo "$1" | sed 's/refs\/heads\///')
 
+# Make for CDK dependabot prefix shorter to avoid resources name lenght issues
+if [[ "$BRANCH_NAME" == dependabot* ]]; then
+  BRANCH_NAME="${BRANCH_NAME##*/}" # Keep only last part after /
+fi
+
 # Compute stack name from branch
 # 1) replace non [a-z0-9-] (including /) with -
 # 2) trim leading/trailing -
