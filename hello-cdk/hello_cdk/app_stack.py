@@ -32,7 +32,7 @@ class AppStack(Stack):
             queue_name = f"{id}-SQSQueue",
             retention_period = Duration.days(3),
             visibility_timeout = Duration.seconds(120),
-            encryption = sqs.QueueEncryption.SQS_MANAGED,
+            encryption = sqs.QueueEncryption.KMS_MANAGED,
             enforce_ssl = True
         )
 
@@ -51,9 +51,12 @@ class AppStack(Stack):
             self,
             id = "LambdaFunction",
             function_name = f"{id}-LambdaFunction",
+            description = "A simple hello world Lambda function",
             runtime = _lambda.Runtime.NODEJS_20_X,
             architecture = _lambda.Architecture.ARM_64,
             handler = "index.handler",
+            timeout = Duration.seconds(10),
+            # reserved_concurrent_executions = 50,
             log_group = log_group, # Associate the Log Group with the Lambda function
             environment = {
                 "TABLE_NAME": table_name,
@@ -72,7 +75,7 @@ class AppStack(Stack):
         )
 
         # Add dependencies
-        my_function.node.add_dependency(log_group)
+        # my_function.node.add_dependency(log_group)
         my_function.node.add_dependency(queue)
 
         # Define the Lambda function URL resource
@@ -81,5 +84,5 @@ class AppStack(Stack):
         )
 
         # Define a CloudFormation output(s)
-        CfnOutput(self, "FunctionUrlOutput", value=my_function_url.url, export_name=f"{id}-FunctionUrlOutput")
-        CfnOutput(self, "SqsURL", value=queue.queue_url, export_name=f"{id}-SqsURL")
+        CfnOutput(self, "FunctionUrlOutput", value = my_function_url.url, export_name = f"{id}-FunctionUrlOutput")
+        CfnOutput(self, "SqsURL", value = queue.queue_url, export_name = f"{id}-SqsURL")

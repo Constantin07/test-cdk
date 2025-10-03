@@ -4,7 +4,7 @@ import os
 
 import aws_cdk as cdk
 
-from hello_cdk.config import load_config
+from hello_cdk.utils.config import load_config
 from hello_cdk.network_stack import NetworkStack
 from hello_cdk.db_stack import DatabaseStack
 from hello_cdk.app_stack import AppStack
