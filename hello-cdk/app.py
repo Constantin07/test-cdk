@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-import os
+"""Hello CDK App"""
+
+# import os
 
 import aws_cdk as cdk
 
@@ -18,8 +20,7 @@ stack_prefix = app.node.try_get_context("stack_prefix") or ""
 env_name = app.node.try_get_context("env") or "dev" # Default to 'dev' if not provided
 if not env_name:
     raise RuntimeError("The mandatory environment context 'env' is not set. Use -c env=dev")
-else:
-    print(f"Environment: {env_name}")
+print(f"Environment: {env_name}")
 config = load_config(env_name)
 
 # Network stack is shared with other branch stacks

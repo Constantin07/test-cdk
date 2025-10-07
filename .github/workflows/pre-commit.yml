@@ -1,0 +1,33 @@
+name: Pre-commit checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: pre-commit-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+env:
+  python_version: 3.13
+  working_directory: hello-cdk
+
+jobs:
+  pre-commit-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          install_dev_dependencies: true
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1

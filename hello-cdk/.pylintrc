@@ -1,0 +1,5 @@
+[MASTER]
+ignore-paths=.venv
+
+[REPORTS]
+fail-under=9.50
