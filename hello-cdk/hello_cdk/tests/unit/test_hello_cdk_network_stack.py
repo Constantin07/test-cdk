@@ -8,8 +8,11 @@ from hello_cdk.network_stack import NetworkStack
 def test_vpc_is_created():
     """Test if a VPC is created in the NetworkStack"""
 
+    test_config = {
+        "vpc_cidr": "10.0.0.0/21"
+    }
     app = core.App()
-    stack = NetworkStack(app, "hello-cdk", config={})
+    stack = NetworkStack(app, "hello-cdk", config=test_config)
     template = assertions.Template.from_stack(stack)
 
     # Assert that a VPC resource is created
