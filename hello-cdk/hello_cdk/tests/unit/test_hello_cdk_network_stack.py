@@ -1,9 +1,12 @@
+"""Unit tests"""
+
 import aws_cdk as core
-import aws_cdk.assertions as assertions
+from aws_cdk import assertions
 
 from hello_cdk.network_stack import NetworkStack
 
 def test_vpc_is_created():
+    """Test if a VPC is created in the NetworkStack"""
 
     app = core.App()
     stack = NetworkStack(app, "hello-cdk", config={})

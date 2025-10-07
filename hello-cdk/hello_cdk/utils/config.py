@@ -8,6 +8,6 @@ def load_config(environment: str) -> dict:
     Import configuration settings from YAML config file
     :return: dict with configuration items
     """
-    with open(os.path.join("config", f"{environment}.yml"), 'r') as config_file:
+    with open(os.path.join("config", f"{environment}.yml"), 'r', encoding="utf-8") as config_file:
         config = YAML().load(config_file.read())
     return config

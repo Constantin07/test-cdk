@@ -2,6 +2,8 @@
 account: '710782875474'
 region: eu-west-1
 
+vpc_cidr: "10.0.0.0/16"
+
 default_tags:
   application: hello
   environment-type: nlv

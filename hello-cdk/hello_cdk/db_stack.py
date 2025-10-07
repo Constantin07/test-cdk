@@ -1,3 +1,5 @@
+"""Database stack"""
+
 from aws_cdk import (
     Stack,
     RemovalPolicy,
@@ -8,11 +10,11 @@ from aws_cdk import (
 from constructs import Construct
 
 # Define the database stack
-class DatabaseStack(Stack):
+class DatabaseStack(Stack):    # pylint: disable=missing-class-docstring
     TABLE_ID = "DynamoDBTable" # Logical ID
 
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
-        config = kwargs.pop("config")
+        config = kwargs.pop("config") # pylint: disable=unused-variable
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -58,4 +60,5 @@ class DatabaseStack(Stack):
         )
 
         # Output table ARN
-        CfnOutput(self, id = "myTableName", value = dynamodb_table.table_name, export_name = f"{id}-myTableName")
+        CfnOutput(self, id = "myTableName", value = dynamodb_table.table_name,
+            export_name = f"{id}-myTableName")

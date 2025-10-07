@@ -1,3 +1,5 @@
+"""Network stack"""
+
 from aws_cdk import (
     Stack,
     RemovalPolicy,
@@ -6,7 +8,7 @@ from aws_cdk import (
 
 from constructs import Construct
 
-class NetworkStack(Stack):
+class NetworkStack(Stack):              # pylint: disable=missing-class-docstring
     VPC_ID = "Vpc" # Logical ID
 
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
@@ -16,7 +18,7 @@ class NetworkStack(Stack):
         # Set the CloudFormation template description
         self.template_options.description = "Networking Stack (Shared)"
 
-        vpc_cidr = self.node.try_get_context("vpc_cdr") or "10.0.0.0/16"
+        vpc_cidr = config["vpc_cidr"]
 
         # Create VPC
         vpc = ec2.Vpc(

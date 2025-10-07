@@ -1,3 +1,5 @@
+"""Application stack"""
+
 from aws_cdk import (
     Stack,
     RemovalPolicy,
@@ -11,9 +13,9 @@ from aws_cdk import (
 
 from constructs import Construct
 
-class AppStack(Stack):
+class AppStack(Stack):                  # pylint: disable=missing-class-docstring
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
-        config = kwargs.pop("config")
+        config = kwargs.pop("config")   # pylint: disable=unused-variable
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -84,5 +86,6 @@ class AppStack(Stack):
         )
 
         # Define a CloudFormation output(s)
-        CfnOutput(self, "FunctionUrlOutput", value = my_function_url.url, export_name = f"{id}-FunctionUrlOutput")
+        CfnOutput(self, "FunctionUrlOutput", value = my_function_url.url,
+            export_name = f"{id}-FunctionUrlOutput")
         CfnOutput(self, "SqsURL", value = queue.queue_url, export_name = f"{id}-SqsURL")
