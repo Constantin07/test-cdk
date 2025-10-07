@@ -1,0 +1,30 @@
+name: Pre-commit checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: pre-commit-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions: read-all
+
+env:
+  python_version: 3.13
+
+jobs:
+  pre-commit-checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python_version }}
+
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
