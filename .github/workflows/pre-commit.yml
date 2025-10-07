@@ -13,6 +13,7 @@ permissions: read-all
 
 env:
   python_version: 3.13
+  working_directory: hello-cdk
 
 jobs:
   pre-commit-checks:
@@ -21,10 +22,12 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Setup tooling
+        uses: ./.github/actions/setup
         with:
-          python-version: ${{ env.python_version }}
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          install_dev_dependencies: true
 
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
