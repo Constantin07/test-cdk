@@ -2,4 +2,4 @@
 ignore-paths=.venv
 
 [REPORTS]
-fail-under=9.50
+fail-under=9.70
