@@ -354,7 +354,8 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0  # Fetch full history to include tags
+          fetch-depth: 0    # Fetch full history
+          fetch-tags: true  # Fetch tags too
 
       - name: Get new tag
         run: echo "NEW_TAG=${{ needs.determine-version.outputs.next_version }}" >> $GITHUB_ENV
@@ -375,7 +376,7 @@ jobs:
         uses: orhun/git-cliff-action@v4
         with:
           config: cliff.toml
-          args: --current
+          args: --verbose --current
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           OUTPUT: CHANGELOG.md
