@@ -29,5 +29,8 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: true
 
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1

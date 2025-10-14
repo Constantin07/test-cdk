@@ -15,7 +15,7 @@ from constructs import Construct
 
 class AppStack(Stack):                  # pylint: disable=missing-class-docstring
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
-        config = kwargs.pop("config")   # pylint: disable=unused-variable
+        _ = kwargs.pop("config")
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -58,7 +58,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             architecture = _lambda.Architecture.ARM_64,
             handler = "index.handler",
             timeout = Duration.seconds(10),
-            # reserved_concurrent_executions = 50,
+            reserved_concurrent_executions = 10,
             log_group = log_group, # Associate the Log Group with the Lambda function
             environment = {
                 "TABLE_NAME": table_name,

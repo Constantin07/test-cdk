@@ -14,7 +14,6 @@ soft-fail: true
 compact: true
 skip-path: []
 skip-check:
-  - CKV_AWS_115 # For testing purposes not set
   - CKV_AWS_116 # AWS Lambda function doesn't require a Dead Letter Queue(DLQ)
   - CKV_AWS_117 # For testing purposes no need for lambda to be in VPC
   - CKV_AWS_119 # For testing purposes use AWS Managed KMS for DynamoDB encryption

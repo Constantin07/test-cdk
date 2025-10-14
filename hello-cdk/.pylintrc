@@ -1,5 +1,7 @@
-[MASTER]
-ignore-paths=.venv
-
-[REPORTS]
+[MAIN]
 fail-under=9.70
+ignore-paths=.venv|.venv
+
+[VARIABLES]
+# List of names allowed to shadow builtins
+allowed-redefined-builtins=id
