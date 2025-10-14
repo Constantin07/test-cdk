@@ -14,7 +14,6 @@ install: checkOSDependencies
 		. ./.venv/bin/activate && ${PIP} install -r requirements-dev.txt
 		npm --prefix ../ install
 
-
 .PHONY: lint
 lint:
 		. ./.venv/bin/activate && pylint --recursive=y .
