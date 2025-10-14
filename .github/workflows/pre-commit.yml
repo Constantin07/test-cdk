@@ -29,5 +29,11 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: true
 
+      - name: Cache pre-commit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
       - name: Run pre-commit
         uses: pre-commit/action@v3.0.1
