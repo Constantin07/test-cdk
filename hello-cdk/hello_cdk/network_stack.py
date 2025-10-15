@@ -11,8 +11,7 @@ from constructs import Construct
 class NetworkStack(Stack):              # pylint: disable=missing-class-docstring
     VPC_ID = "Vpc" # Logical ID
 
-    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
-        config = kwargs.pop("config")
+    def __init__(self, scope: Construct, id: str, config, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -21,7 +20,7 @@ class NetworkStack(Stack):              # pylint: disable=missing-class-docstrin
         vpc_cidr = config["vpc_cidr"]
 
         # Create VPC
-        vpc = ec2.Vpc(
+        self.vpc = ec2.Vpc(
             self,
             id = self.VPC_ID,
             vpc_name = f"{id}-{self.VPC_ID}",
@@ -67,4 +66,16 @@ class NetworkStack(Stack):              # pylint: disable=missing-class-docstrin
             }
         )
 
-        vpc.apply_removal_policy(RemovalPolicy.DESTROY)
+        self.vpc.apply_removal_policy(RemovalPolicy.DESTROY)
+
+        # Create SG for Application
+        self.app_security_group = ec2.SecurityGroup(
+            self,
+            "AppSecurityGroup",
+            security_group_name = f"{id}-AppSecurityGroup",
+            vpc = self.vpc,
+            description = "Application Security Group",
+            allow_all_outbound = True,
+            allow_all_ipv6_outbound = True
+        )
+        self.app_security_group.apply_removal_policy(RemovalPolicy.DESTROY)

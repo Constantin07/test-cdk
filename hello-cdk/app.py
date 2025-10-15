@@ -25,8 +25,8 @@ config = load_config(env_name)
 
 # Network stack is shared with other branch stacks
 network_stack = NetworkStack(app, "NetworkStack", config=config)
-db_stack = DatabaseStack(app, stack_prefix + "DatabaseStack", config=config)
-app_stack = AppStack(app, stack_prefix + "AppStack", config=config)
+db_stack = DatabaseStack(app, stack_prefix + "DatabaseStack")
+app_stack = AppStack(app, stack_prefix + "AppStack", network_stack=network_stack)
 
 # Add dependecy so Network stack is deployet first
 db_stack.add_dependency(network_stack)

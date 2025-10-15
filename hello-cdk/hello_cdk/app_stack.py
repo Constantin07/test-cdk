@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_sqs as sqs,
     aws_lambda as _lambda,
     aws_logs as logs,
+    aws_ec2 as ec2,
     CfnOutput,
     Fn
 )
@@ -14,8 +15,7 @@ from aws_cdk import (
 from constructs import Construct
 
 class AppStack(Stack):                  # pylint: disable=missing-class-docstring
-    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
-        _ = kwargs.pop("config")
+    def __init__(self, scope: Construct, id: str, network_stack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -63,6 +63,9 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             environment = {
                 "TABLE_NAME": table_name,
             },
+            vpc = network_stack.vpc, # Use the VPC from NetworkStack
+            vpc_subnets = ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
+            security_groups = [network_stack.app_security_group],
             code = _lambda.Code.from_inline(
                 """
                 const tableName = process.env.TABLE_NAME?.trim() || 'None';
