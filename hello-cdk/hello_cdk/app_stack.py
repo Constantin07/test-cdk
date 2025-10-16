@@ -80,7 +80,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
         )
 
         # Add dependencies
-        # my_function.node.add_dependency(log_group)
+        my_function.node.add_dependency(log_group)
         my_function.node.add_dependency(queue)
 
         # Define the Lambda function URL resource
