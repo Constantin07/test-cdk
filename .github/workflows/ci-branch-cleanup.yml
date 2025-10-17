@@ -44,6 +44,10 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
+      - name: Generate Lambda Package for CDK
+        shell: bash
+        run: make package
+
       - name: List CDK Stacks
         run: |
           echo "### CDK list" >> $GITHUB_STEP_SUMMARY

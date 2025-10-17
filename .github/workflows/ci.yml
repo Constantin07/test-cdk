@@ -16,7 +16,6 @@ on:
 
 env:
   python_version: 3.13
-  git_chglog_version: 0.15.4
   working_directory: hello-cdk
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
@@ -84,17 +83,15 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: false
 
-      - name: Zip Lambda Package
-        working-directory: ${{ env.working_directory }}/hello_cdk/lambda_src
-        run: |
-          zip -9r lambda.zip ./ \
-            -x "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py"
+      - name: Generate Lambda Package
+        shell: bash
+        run: make package
 
       - name: Upload Lambda package as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
+          path: ${{ env.working_directory }}/lambda.zip
           if-no-files-found: error
 
   security-scan:
