@@ -48,17 +48,7 @@ jobs:
           echo "The CDK branch stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
           echo "::notice title=CDK Stack prefix::CDK Stack prefix is ${{ steps.stack_prefix.outputs.prefix }}"
 
-  build:
-    needs: [determine-version]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v5
-
-      - name: Build and run tests
-        run: echo "Do some build and tests here. TODO"
-
-  cdk-unit-test:
+  run-unit-tests:
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -76,6 +66,16 @@ jobs:
 
       - name: Run CDK Unit Tests
         run: pytest -v
+
+  build:
+    needs: [determine-version]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Build and run tests
+        run: echo "Do some build and tests here. TODO"
 
   security-scan:
     needs: [ get-stack-prefix ]
@@ -114,7 +114,7 @@ jobs:
           output_file_path: console,results.sarif
 
   cdk-diff:
-    needs: [get-stack-prefix, build, cdk-unit-test, security-scan]
+    needs: [get-stack-prefix, build, run-unit-tests, security-scan]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
