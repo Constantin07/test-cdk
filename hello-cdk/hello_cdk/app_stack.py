@@ -82,6 +82,6 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
         )
 
         # Define a CloudFormation output(s)
-        CfnOutput(self, "FunctionUrlOutput", value = my_function_url.url,
-            export_name = f"{id}-FunctionUrlOutput")
+        CfnOutput(self, "FunctionUrl", value = my_function_url.url,
+            export_name = f"{id}-FunctionUrl")
         CfnOutput(self, "SqsURL", value = queue.queue_url, export_name = f"{id}-SqsURL")
