@@ -84,11 +84,8 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: false
 
-      - name: Zip Lambda Package
-        working-directory: ${{ env.working_directory }}/hello_cdk/lambda_src
-        run: |
-          zip -9r lambda.zip ./ \
-            -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py"
+      - name: Generate Lambda Package
+        run: make package
 
       - name: Upload Lambda package as Artifact
         uses: actions/upload-artifact@v4
