@@ -67,44 +67,8 @@ jobs:
       - name: Run Unit Tests
         run: pytest -v
 
-  security-scan:
-    needs: [ get-stack-prefix ]
-    runs-on: ubuntu-24.04
-    environment: dev-branch
-    permissions:
-      contents: read
-      id-token: write
-    env:
-      AWS_REGION:: ${{ vars.AWS_REGION }}
-    defaults:
-      run:
-        working-directory: ${{ env.working_directory }}
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v5
-
-      - name: Setup tooling
-        uses: ./.github/actions/setup
-        with:
-          python_version: ${{ env.python_version }}
-          working_directory: ${{ env.working_directory }}
-          aws_region: ${{ vars.AWS_REGION }}
-          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
-
-      - name: Run CDK synth
-        run: |
-          npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
-
-      - name: Run Checkov action
-        uses: bridgecrewio/checkov-action@master
-        with:
-          config_file: .checkov.yml
-          directory: ./hello-cdk/cdk.out
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
-
   build:
-    needs: [determine-version, run-unit-tests, security-scan]
+    needs: [determine-version, run-unit-tests]
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -132,8 +96,50 @@ jobs:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
 
+  security-scan:
+    needs: [ get-stack-prefix, determine-version, build ]
+    runs-on: ubuntu-24.04
+    environment: dev-branch
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      AWS_REGION:: ${{ vars.AWS_REGION }}
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          aws_region: ${{ vars.AWS_REGION }}
+          role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
+
+      - name: Download lambda package
+        uses: actions/download-artifact@v5
+        with:
+          name: lambda-${{ needs.determine-version.outputs.next_version }}
+          path: ${{ env.working_directory }}/hello_cdk
+
+      - name: Run CDK synth
+        run: |
+          npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
+
+      - name: Run Checkov action
+        uses: bridgecrewio/checkov-action@master
+        with:
+          config_file: .checkov.yml
+          directory: ./hello-cdk/cdk.out
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+
   cdk-diff:
-    needs: [get-stack-prefix, determine-version, build, security-scan]
+    needs: [get-stack-prefix, determine-version, security-scan]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
