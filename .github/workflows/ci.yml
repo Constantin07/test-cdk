@@ -133,7 +133,7 @@ jobs:
           path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
 
   cdk-diff:
-    needs: [get-stack-prefix, build, security-scan]
+    needs: [get-stack-prefix, determine-version, build, security-scan]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
