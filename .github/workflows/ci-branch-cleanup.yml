@@ -45,6 +45,7 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Generate Lambda Package for CDK
+        shell: bash
         run: make package
 
       - name: List CDK Stacks
