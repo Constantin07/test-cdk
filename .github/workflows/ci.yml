@@ -64,7 +64,7 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: true
 
-      - name: Run CDK Unit Tests
+      - name: Run Unit Tests
         run: pytest -v
 
   security-scan:
@@ -106,12 +106,25 @@ jobs:
   build:
     needs: [determine-version, run-unit-tests, security-scan]
     runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
 
-      - name: Build and run tests
-        run: echo "Do some build and tests here. TODO"
+      - name: Setup tooling
+        uses: ./.github/actions/setup
+        with:
+          python_version: ${{ env.python_version }}
+          working_directory: ${{ env.working_directory }}
+          install_dev_dependencies: false
+
+      - name: Zip Lambda Package
+        working-directory: ${{ env.working_directory }}/hello_cdk/lambda_src
+        run: |
+          zip -9r lambda.zip ./ \
+            -x "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py"
 
   cdk-diff:
     needs: [get-stack-prefix, build, security-scan]
