@@ -16,7 +16,6 @@ on:
 
 env:
   python_version: 3.13
-  git_chglog_version: 0.15.4
   working_directory: hello-cdk
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
@@ -86,6 +85,7 @@ jobs:
 
       - name: Generate Lambda Package
         run: make package
+        shell: bash
 
       - name: Upload Lambda package as Artifact
         uses: actions/upload-artifact@v4
