@@ -263,7 +263,7 @@ jobs:
             });
 
   cdk-drift:
-    needs: [get-stack-prefix, cdk-diff ]
+    needs: [get-stack-prefix, determine-version, cdk-diff ]
     runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
@@ -285,6 +285,12 @@ jobs:
           working_directory: ${{ env.working_directory }}
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
+
+      - name: Download lambda package
+        uses: actions/download-artifact@v5
+        with:
+          name: lambda-${{ needs.determine-version.outputs.next_version }}
+          path: ${{ env.working_directory }}
 
       - name: Run CDK Drift Detection
         run: |
