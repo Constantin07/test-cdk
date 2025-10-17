@@ -96,7 +96,7 @@ jobs:
 
   security-scan:
     needs: [ get-stack-prefix, determine-version, build ]
-    runs-on: ubuntu-24.0
+    runs-on: ubuntu-24.04
     environment: dev-branch
     permissions:
       contents: read
