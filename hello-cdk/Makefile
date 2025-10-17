@@ -1,3 +1,5 @@
+SHELL := /usr/bin/env bash
+
 PIP ?= pip3
 
 PYTHON_VERSION := 3.13
