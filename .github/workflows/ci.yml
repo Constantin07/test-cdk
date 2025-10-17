@@ -126,6 +126,12 @@ jobs:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}/hello_cdk
 
+      - name: List dir
+        run:
+          pwd
+          ls -la ./
+          tree ./
+
       - name: Run CDK synth
         run: |
           npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
