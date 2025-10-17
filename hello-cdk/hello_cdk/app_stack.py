@@ -68,6 +68,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             security_groups = [network_stack.app_security_group],
             code = _lambda.Code.from_asset("lambda.zip"),
             tracing = _lambda.Tracing.DISABLED, # cost savings
+            application_log_level_v2 = _lambda.ApplicationLogLevel.INFO,
         )
 
         # Add dependencies
