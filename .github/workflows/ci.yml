@@ -127,7 +127,7 @@ jobs:
           path: ${{ env.working_directory }}/hello_cdk
 
       - name: List dir
-        run:
+        run: |
           pwd
           ls -la ./
           tree ./

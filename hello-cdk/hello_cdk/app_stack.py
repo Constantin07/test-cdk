@@ -67,6 +67,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             vpc_subnets = ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
             security_groups = [network_stack.app_security_group],
             code = _lambda.Code.from_asset("lambda.zip"),
+            tracing = _lambda.Tracing.DISABLED, # cost savings
         )
 
         # Add dependencies
