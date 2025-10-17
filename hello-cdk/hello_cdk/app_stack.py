@@ -69,7 +69,8 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             code = _lambda.Code.from_asset("lambda.zip"),
             tracing = _lambda.Tracing.DISABLED, # cost savings
             application_log_level_v2 = _lambda.ApplicationLogLevel.INFO,
-            logging_format = _lambda.LoggingFormat.JSON
+            logging_format = _lambda.LoggingFormat.JSON,
+            timeout = Duration.seconds(30)
         )
 
         # Add dependencies

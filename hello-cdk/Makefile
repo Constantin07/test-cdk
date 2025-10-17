@@ -35,4 +35,4 @@ deploy:
 .PHONY: clean
 clean:
 		$(info Destroying environment ...)
-		rm -rf ./.venv ./cdk.out
+		rm -rf ./.venv ./cdk.out lambda.zip
