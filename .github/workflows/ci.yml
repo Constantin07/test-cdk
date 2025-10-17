@@ -114,7 +114,7 @@ jobs:
         run: echo "Do some build and tests here. TODO"
 
   cdk-diff:
-    needs: [get-stack-prefix, build, run-unit-tests, security-scan]
+    needs: [get-stack-prefix, build, security-scan]
     if: >-
       ${{
         (contains(github.event.pull_request.labels.*.name, 'deploy-infra') && github.ref_name != 'main') ||
