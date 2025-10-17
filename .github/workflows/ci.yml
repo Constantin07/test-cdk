@@ -124,7 +124,7 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}/hello_cdk
+          path: ${{ env.working_directory }}
 
       - name: List dir
         run: |
