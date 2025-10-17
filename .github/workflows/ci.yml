@@ -95,6 +95,7 @@ jobs:
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
+          if-no-files-found: error
 
   security-scan:
     needs: [ get-stack-prefix, determine-version, build ]
