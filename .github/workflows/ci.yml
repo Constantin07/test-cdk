@@ -68,7 +68,7 @@ jobs:
         run: pytest -v
 
   build:
-    needs: [determine-version]
+    needs: [determine-version, run-unit-tests]
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout source code
