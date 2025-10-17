@@ -164,6 +164,12 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
+      - name: Download lambda package
+        uses: actions/download-artifact@v5
+        with:
+          name: lambda-${{ needs.determine-version.outputs.next_version }}
+          path: ${{ env.working_directory }}/hello_cdk/lambda_src
+
       - name: Synth CDK stacks
         run: npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
 
