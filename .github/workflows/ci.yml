@@ -67,16 +67,6 @@ jobs:
       - name: Run CDK Unit Tests
         run: pytest -v
 
-  build:
-    needs: [determine-version, run-unit-tests]
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v5
-
-      - name: Build and run tests
-        run: echo "Do some build and tests here. TODO"
-
   security-scan:
     needs: [ get-stack-prefix ]
     runs-on: ubuntu-24.04
@@ -112,6 +102,16 @@ jobs:
           directory: ./hello-cdk/cdk.out
           output_format: cli,sarif
           output_file_path: console,results.sarif
+
+  build:
+    needs: [determine-version, run-unit-tests, security-scan]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Build and run tests
+        run: echo "Do some build and tests here. TODO"
 
   cdk-diff:
     needs: [get-stack-prefix, build, run-unit-tests, security-scan]
