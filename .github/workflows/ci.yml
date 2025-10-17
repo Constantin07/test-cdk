@@ -84,8 +84,8 @@ jobs:
           install_dev_dependencies: false
 
       - name: Generate Lambda Package
-        run: make package
         shell: bash
+        run: make package
 
       - name: Upload Lambda package as Artifact
         uses: actions/upload-artifact@v4
