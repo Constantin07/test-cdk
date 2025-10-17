@@ -132,6 +132,9 @@ jobs:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
 
+      - name: List dir
+        run: ls -la ${{ env.working_directory }}/hello_cdk/lambda_src
+
   cdk-diff:
     needs: [get-stack-prefix, determine-version, build, security-scan]
     if: >-
