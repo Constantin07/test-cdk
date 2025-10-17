@@ -10,7 +10,7 @@ test/*.js
 .npm
 
 # Python
-**/venv
+**/.venv
 __pycache__/
 *.py[cod]
 .coverage
@@ -25,3 +25,6 @@ CHANGELOG.md
 # VSCode
 .vscode
 .idea/
+
+# Lambda packages
+lambda.zip

@@ -18,6 +18,12 @@ install: checkOSDependencies
 lint:
 		. ./.venv/bin/activate && pylint --recursive=y .
 
+package:
+		pushd hello_cdk/lambda_src && \
+		zip -9r lambda.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py" && \
+		mv lambda.zip ../../ && \
+		popd
+
 .PHONY: diff
 diff:
 		. ./.venv/bin/activate && npx aws-cdk diff
