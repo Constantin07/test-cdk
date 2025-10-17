@@ -57,7 +57,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             runtime = _lambda.Runtime.PYTHON_3_13,
             architecture = _lambda.Architecture.ARM_64,
             handler = "lambda_function.handler",
-            timeout = Duration.seconds(10),
+            timeout = Duration.seconds(30),
             reserved_concurrent_executions = 10,
             log_group = log_group, # Associate the Log Group with the Lambda function
             environment = {
@@ -69,8 +69,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             code = _lambda.Code.from_asset("lambda.zip"),
             tracing = _lambda.Tracing.DISABLED, # cost savings
             application_log_level_v2 = _lambda.ApplicationLogLevel.INFO,
-            logging_format = _lambda.LoggingFormat.JSON,
-            timeout = Duration.seconds(30)
+            logging_format = _lambda.LoggingFormat.JSON
         )
 
         # Add dependencies
