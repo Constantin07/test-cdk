@@ -54,9 +54,9 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             id = "LambdaFunction",
             function_name = f"{id}-LambdaFunction",
             description = "A simple hello world Lambda function",
-            runtime = _lambda.Runtime.NODEJS_20_X,
+            runtime = _lambda.Runtime.PYTHON_3_13,
             architecture = _lambda.Architecture.ARM_64,
-            handler = "index.handler",
+            handler = "lambda_function.handler",
             timeout = Duration.seconds(10),
             reserved_concurrent_executions = 10,
             log_group = log_group, # Associate the Log Group with the Lambda function
@@ -66,17 +66,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             vpc = network_stack.vpc, # Use the VPC from NetworkStack
             vpc_subnets = ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
             security_groups = [network_stack.app_security_group],
-            code = _lambda.Code.from_inline(
-                """
-                const tableName = process.env.TABLE_NAME?.trim() || 'None';
-                exports.handler = async function(event) {
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify(`Hello CDK App! Table name is: ${tableName}`),
-                    };
-                };
-                """
-            ),
+            code = _lambda.Code.from_asset("lambda.zip"),
         )
 
         # Add dependencies

@@ -132,9 +132,6 @@ jobs:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}/hello_cdk/lambda_src/lambda.zip
 
-      - name: List dir
-        run: ls -la ${{ env.working_directory }}/hello_cdk/lambda_src
-
   cdk-diff:
     needs: [get-stack-prefix, determine-version, build, security-scan]
     if: >-
@@ -171,7 +168,10 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}/hello_cdk/lambda_src
+          path: ${{ env.working_directory }}/hello_cdk
+
+      - name: List dir
+        run: ls -la hello_cdk
 
       - name: Synth CDK stacks
         run: npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
