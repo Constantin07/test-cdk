@@ -11,14 +11,14 @@ checkOSDependencies:
 .PHONY: install
 install: checkOSDependencies
 		python3 -m venv .venv
-		. ./.venv/bin/activate && ${PIP} install --upgrade pip
-		. ./.venv/bin/activate && ${PIP} install -r requirements.txt
-		. ./.venv/bin/activate && ${PIP} install -r requirements-dev.txt
+		${PIP} install --upgrade pip
+		${PIP} install -r requirements.txt
+		${PIP} install -r requirements-dev.txt
 		npm --prefix ../ install
 
 .PHONY: lint
 lint:
-		. ./.venv/bin/activate && pylint --recursive=y .
+		pylint --recursive=y .
 
 package:
 		pushd hello_cdk/lambda_src && \
@@ -28,11 +28,11 @@ package:
 
 .PHONY: diff
 diff:
-		. ./.venv/bin/activate && npx aws-cdk diff
+		npx aws-cdk diff
 
 .PHONY: deploy
 deploy:
-		. ./.venv/bin/activate && npx aws-cdk deploy --all
+		npx aws-cdk deploy --all
 
 .PHONY: clean
 clean:
