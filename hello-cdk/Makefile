@@ -8,9 +8,12 @@ PYTHON_VERSION := 3.13
 checkOSDependencies:
 		@python3 --version | grep -q '${PYTHON_VERSION}' || (echo "Error: Python ${PYTHON_VERSION} is required" && exit 1)
 
+.PHONY: venv
+venv: checkOSDependencies
+		python3 -m venv .venv
+
 .PHONY: install
 install: checkOSDependencies
-		python3 -m venv .venv
 		${PIP} install --upgrade pip
 		${PIP} install -r requirements.txt
 		${PIP} install -r requirements-dev.txt
