@@ -10,12 +10,11 @@ output:
 secrets-scan-file-type: []
 summary-position: top
 quiet: true
-soft-fail: true
+soft-fail: false
 compact: true
 skip-path: []
 skip-check:
   - CKV_AWS_116 # AWS Lambda function doesn't require a Dead Letter Queue(DLQ)
-  - CKV_AWS_117 # For testing purposes no need for lambda to be in VPC
   - CKV_AWS_119 # For testing purposes use AWS Managed KMS for DynamoDB encryption
   - CKV_AWS_158 # For testing purposes, using default AWS Managed KMS for CloudWatch Log Group encryption
   - CKV_AWS_173 # For testing purposed use default for Lambda environment encryption
