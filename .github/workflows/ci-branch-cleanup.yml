@@ -6,7 +6,7 @@ on:
     branches:
       - main
     types:
-      - closed
+      - closed  # triggers for both 'closed' and 'merged' PRs
 
 env:
   python_version: 3.13
@@ -19,7 +19,6 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-24.04
-    if: github.event.pull_request.merged == true
     environment: dev-branch
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}
