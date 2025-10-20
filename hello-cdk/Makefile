@@ -8,9 +8,12 @@ PYTHON_VERSION := 3.13
 checkOSDependencies:
 		@python3 --version | grep -q '${PYTHON_VERSION}' || (echo "Error: Python ${PYTHON_VERSION} is required" && exit 1)
 
+.PHONY: venv
+venv: checkOSDependencies
+		python3 -m venv .venv
+
 .PHONY: install
 install: checkOSDependencies
-		python3 -m venv .venv
 		${PIP} install --upgrade pip
 		${PIP} install -r requirements.txt
 		${PIP} install -r requirements-dev.txt
@@ -21,6 +24,7 @@ lint:
 		pylint --recursive=y .
 
 package:
+		rm -f lambda.zip
 		pushd hello_cdk/lambda_src && \
 		zip -9r lambda.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py" && \
 		mv lambda.zip ../../ && \

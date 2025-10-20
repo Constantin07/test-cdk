@@ -8,6 +8,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_logs as logs,
     aws_ec2 as ec2,
+    aws_iam as iam,
     CfnOutput,
     Fn
 )
@@ -72,7 +73,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             logging_format = _lambda.LoggingFormat.JSON
         )
 
-        # Create new version
+        # Create new published version
         version = my_function.current_version
 
         # Create an alias that points to the latest version
@@ -82,6 +83,9 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             alias_name = config["environment"],
             version=version
         )
+
+        # Grant on the alias (qualified)
+        alias.grant_invoke(iam.ServicePrincipal("apigateway.amazonaws.com"))
 
         # Define the Lambda function URL resource
         my_function_url = my_function.add_function_url(
