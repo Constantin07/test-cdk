@@ -30,6 +30,14 @@ package:
 		mv lambda.zip ../../ && \
 		popd
 
+.PHONY: synth
+synth: package
+		npx aws-cdk synth
+
+.PHONY: scan
+scan:
+		checkov --config-file ../.checkov.yml -d ./cdk.out
+
 .PHONY: diff
 diff:
 		npx aws-cdk diff

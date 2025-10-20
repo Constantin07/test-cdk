@@ -84,8 +84,13 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             version=version
         )
 
-        # Grant on the alias (qualified)
-        alias.grant_invoke(iam.ServicePrincipal("apigateway.amazonaws.com"))
+        # Add permissions to the alias
+        alias.add_permission(
+            "InvokeFromApiGw",
+            principal = iam.ServicePrincipal("apigateway.amazonaws.com"),
+            action = "lambda:InvokeFunction",
+            source_account = Stack.of(self).account,
+        )
 
         # Define the Lambda function URL resource
         my_function_url = my_function.add_function_url(
