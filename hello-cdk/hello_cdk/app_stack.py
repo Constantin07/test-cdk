@@ -15,7 +15,7 @@ from aws_cdk import (
 from constructs import Construct
 
 class AppStack(Stack):                  # pylint: disable=missing-class-docstring
-    def __init__(self, scope: Construct, id: str, network_stack, **kwargs) -> None:
+    def __init__(self, scope: Construct, id: str, config, network_stack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Set the CloudFormation template description
@@ -72,14 +72,25 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             logging_format = _lambda.LoggingFormat.JSON
         )
 
-        # Add dependencies
-        my_function.node.add_dependency(log_group)
-        my_function.node.add_dependency(queue)
+        # Create new version
+        version = my_function.current_version
+
+        # Create an alias that points to the latest version
+        alias = _lambda.Alias(
+            self,
+            "MyLambdaAlias",
+            alias_name = config["environment"],
+            version=version
+        )
 
         # Define the Lambda function URL resource
         my_function_url = my_function.add_function_url(
             auth_type = _lambda.FunctionUrlAuthType.NONE,
         )
+
+        # Add dependencies
+        my_function.node.add_dependency(log_group)
+        my_function.node.add_dependency(queue)
 
         # Define a CloudFormation output(s)
         CfnOutput(self, "FunctionUrl", value = my_function_url.url,
