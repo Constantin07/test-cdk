@@ -5,3 +5,5 @@ MD024:
   siblings_only: true
 # inline HTML
 MD033: false
+# GitHub badges in README
+MD041: false
