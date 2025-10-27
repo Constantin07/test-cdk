@@ -119,7 +119,7 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Download lambda package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}
@@ -169,7 +169,7 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Download lambda package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}
@@ -285,7 +285,7 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Download lambda package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}
@@ -357,7 +357,7 @@ jobs:
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
       - name: Download lambda package
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
           path: ${{ env.working_directory }}
