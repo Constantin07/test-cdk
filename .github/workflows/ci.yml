@@ -83,16 +83,17 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: false
 
-      - name: Generate Lambda Package
-        shell: bash
-        run: make package
+      # Not required as CDK creates a deployment package automatically
+      # - name: Generate Lambda Package
+      #   shell: bash
+      #   run: make package
 
-      - name: Upload Lambda package as Artifact
-        uses: actions/upload-artifact@v5
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}/lambda.zip
-          if-no-files-found: error
+      # - name: Upload Lambda package as artifact
+      #   uses: actions/upload-artifact@v5
+      #   with:
+      #     name: lambda-${{ needs.determine-version.outputs.next_version }}
+      #     path: ${{ env.working_directory }}/lambda.zip
+      #     if-no-files-found: error
 
   security-scan:
     needs: [ get-stack-prefix, determine-version, build ]
@@ -118,11 +119,11 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
+      # - name: Download lambda package
+      #   uses: actions/download-artifact@v6
+      #   with:
+      #     name: lambda-${{ needs.determine-version.outputs.next_version }}
+      #     path: ${{ env.working_directory }}
 
       - name: Run CDK synth
         run: |
@@ -168,11 +169,11 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
+      # - name: Download lambda package
+      #   uses: actions/download-artifact@v6
+      #   with:
+      #     name: lambda-${{ needs.determine-version.outputs.next_version }}
+      #     path: ${{ env.working_directory }}
 
       - name: Synth CDK stacks
         run: npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
@@ -284,11 +285,11 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
+      # - name: Download lambda package
+      #   uses: actions/download-artifact@v6
+      #   with:
+      #     name: lambda-${{ needs.determine-version.outputs.next_version }}
+      #     path: ${{ env.working_directory }}
 
       - name: Run CDK Drift Detection
         run: |
@@ -356,11 +357,11 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
+      # - name: Download lambda package
+      #   uses: actions/download-artifact@v6
+      #   with:
+      #     name: lambda-${{ needs.determine-version.outputs.next_version }}
+      #     path: ${{ env.working_directory }}
 
       - name: Run CDK Deploy
         run: |
