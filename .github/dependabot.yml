@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: github-actions
@@ -20,7 +21,9 @@ updates:
 
   # Maintain dependencies for Python
   - package-ecosystem: pip
-    directory: hello-cdk/
+    directories:
+      - hello-cdk
+      - hello-cdk/hello_cdk/lambda_src
     schedule:
       interval: weekly
     allow:
