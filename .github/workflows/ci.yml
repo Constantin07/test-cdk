@@ -295,6 +295,7 @@ jobs:
           echo "### CDK drift" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
+            echo "::group::Drift detection for stack: $stack"
             set +e
             npx cdk drift --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" "$stack" --ci --fail 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
             RC=$?
@@ -305,7 +306,9 @@ jobs:
               echo "Error checking drift for stack $stack, cdk drift exit code: $RC"
               exit $RC
             fi
+            echo "::endgroup::"
           done
+
           echo "Total drifted stacks found: $DRIFTED" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
