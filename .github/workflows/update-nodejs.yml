@@ -1,0 +1,61 @@
+name: Update Node.js
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'    # At 10:00 on Mondays
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Get current Node.js version
+        id: current
+        run: echo "version=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+
+      - name: Set version in .nvmrc
+        id: latest
+        run: |
+          set -eu -o pipefail
+
+          # Ensure jq is installed
+          if ! command -v jq >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          fi
+
+          version="$(curl -sS https://nodejs.org/download/release/index.json | jq -r '[.[] | select(.lts != false)][0].version')"
+          echo "${version}" > .nvmrc
+          echo "version=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
+          echo "major=${version%%.*}" >> "$GITHUB_OUTPUT"
+
+      # Node.js version 25 is not yet LTS, so we only create PRs for version 24.x
+      - name: Create pull request
+        if: ${{ steps.latest.outputs.major == 'v24' && steps.current.outputs.version != steps.latest.outputs.version }}
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          sign-commits: true
+          branch: update-nodejs-${{ steps.latest.outputs.version }}
+          add-paths: .nvmrc
+          body: |
+            This PR updates the Node.js version in `.nvmrc` from `${{ steps.current.outputs.version }}` to `${{ steps.latest.outputs.version }}`.
+            - https://github.com/nodejs/node/releases/tag/${{ steps.latest.outputs.version }}
+            - https://github.com/nodejs/node/compare/${{ steps.current.outputs.version }}...${{ steps.latest.outputs.version }}
