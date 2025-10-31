@@ -1,0 +1,25 @@
+name: Update Node.js
+
+on:
+  schedule:
+    - cron: '0 10 * * 1'    # At 10:00 on Mondays
+
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Get current Node.js version
+        id: current_version
+        run: echo "version=$(cat .nvmrc)" >> "$GITHUB_OUTPUT"
