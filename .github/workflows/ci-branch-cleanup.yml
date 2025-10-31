@@ -43,10 +43,6 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Generate Lambda Package for CDK
-        shell: bash
-        run: make package
-
       - name: List CDK Stacks
         run: |
           echo "### CDK list" >> $GITHUB_STEP_SUMMARY
@@ -71,6 +67,8 @@ jobs:
           echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
+            echo "::group::Destroying stack: $stack"
             npx cdk destroy --context stack_prefix="${{ steps.stack_prefix.outputs.prefix }}" "$stack" --ci --force | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::endgroup::"
           done
           echo '```' >> $GITHUB_STEP_SUMMARY

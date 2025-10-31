@@ -26,7 +26,7 @@ lint:
 package:
 		rm -f lambda.zip
 		pushd hello_cdk/lambda_src && \
-		zip -9r lambda.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" "__init__.py" && \
+		zip -9r lambda.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" && \
 		mv lambda.zip ../../ && \
 		popd
 

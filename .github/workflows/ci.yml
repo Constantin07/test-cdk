@@ -83,6 +83,7 @@ jobs:
           working_directory: ${{ env.working_directory }}
           install_dev_dependencies: false
 
+      # Not required as CDK creates a deployment package automatically
       - name: Generate Lambda Package
         shell: bash
         run: make package
@@ -117,12 +118,6 @@ jobs:
           working_directory: ${{ env.working_directory }}
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
-
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
 
       - name: Run CDK synth
         run: |
@@ -167,12 +162,6 @@ jobs:
           working_directory: ${{ env.working_directory }}
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
-
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
 
       - name: Synth CDK stacks
         run: npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
@@ -284,12 +273,6 @@ jobs:
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
 
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
-
       - name: Run CDK Drift Detection
         run: |
           set -euo pipefail
@@ -312,6 +295,7 @@ jobs:
           echo "### CDK drift" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
+            echo "::group::Drift detection for stack: $stack"
             set +e
             npx cdk drift --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" "$stack" --ci --fail 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
             RC=$?
@@ -322,7 +306,9 @@ jobs:
               echo "Error checking drift for stack $stack, cdk drift exit code: $RC"
               exit $RC
             fi
+            echo "::endgroup::"
           done
+
           echo "Total drifted stacks found: $DRIFTED" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
@@ -355,12 +341,6 @@ jobs:
           working_directory: ${{ env.working_directory }}
           aws_region: ${{ vars.AWS_REGION }}
           role_to_assume: ${{ vars.AWS_OIDC_ROLE }}
-
-      - name: Download lambda package
-        uses: actions/download-artifact@v6
-        with:
-          name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}
 
       - name: Run CDK Deploy
         run: |

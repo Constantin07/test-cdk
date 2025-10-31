@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_logs as logs,
     aws_ec2 as ec2,
     aws_iam as iam,
+    BundlingOptions,
     CfnOutput,
     Fn
 )
@@ -49,6 +50,24 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             removal_policy = RemovalPolicy.DESTROY
         )
 
+        # Lambda code
+        code = _lambda.Code.from_asset(
+            path = "hello_cdk/lambda_src",
+            bundling = BundlingOptions(
+                image = _lambda.Runtime.PYTHON_3_13.bundling_image, # pylint: disable=no-member
+                command = [
+                    "bash", "-c",
+                    # install deps
+                    "pip3 install -r requirements.txt -t /asset-output && "
+                    "cp -a . /asset-output && "
+                    # prune unwanted files from the bundle
+                    "rm -rf /asset-output/tests && "
+                    "find /asset-output -type d -name '__pycache__' -prune -exec rm -rf {} + && "
+                    "find /asset-output -type f -name '*.pyc' -delete"
+                ],
+            ),
+        )
+
         # Define the Lambda function resource
         my_function = _lambda.Function(
             self,
@@ -67,7 +86,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             vpc = network_stack.vpc, # Use the VPC from NetworkStack
             vpc_subnets = ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
             security_groups = [network_stack.app_security_group],
-            code = _lambda.Code.from_asset("lambda.zip"),
+            code = code,
             tracing = _lambda.Tracing.DISABLED, # cost savings
             application_log_level_v2 = _lambda.ApplicationLogLevel.INFO,
             logging_format = _lambda.LoggingFormat.JSON

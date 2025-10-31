@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   deploy:
-    environment: dev
+    environment: dev-branch # cdk bootstrap doesn't support "diff/synth" mode
     runs-on: ubuntu-24.04
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}

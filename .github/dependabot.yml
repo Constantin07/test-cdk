@@ -9,7 +9,7 @@ updates:
       - dependencies
       - github-actions
 
-  # Maintain dependencies for NodeJS
+  # Maintain dependencies for Node.js
   - package-ecosystem: npm
     directory: /
     schedule:
