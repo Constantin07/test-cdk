@@ -67,6 +67,8 @@ jobs:
           echo "### CDK destroy" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           for stack in "${STACKS[@]}"; do
+            echo "::group::Destroying stack: $stack"
             npx cdk destroy --context stack_prefix="${{ steps.stack_prefix.outputs.prefix }}" "$stack" --ci --force | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::endgroup::"
           done
           echo '```' >> $GITHUB_STEP_SUMMARY
