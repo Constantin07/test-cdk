@@ -1,5 +1,4 @@
 version: 2
-
 updates:
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: github-actions
@@ -26,6 +25,21 @@ updates:
       - hello-cdk/hello_cdk/lambda_src
     schedule:
       interval: weekly
+      day: "monday"
+    groups:
+      prod-deps:
+        dependency-type: "production"
+        patterns:
+          - "aws-cdk-lib*"
+          - "aws-cdk.cloud-assembly-schema*"
+          - "constructs*"
+          - "jsii*"
+          - "ruamel.yaml*"
+      dev-deps:
+        dependency-type: "development"
+        patterns:
+          - "pytest*"
+          - "pylint*"
     allow:
       - dependency-type: "all"  # includes dev deps too
     open-pull-requests-limit: 10
