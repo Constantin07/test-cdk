@@ -10,15 +10,16 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
 jobs:
   update:
     runs-on: ubuntu-24.04
     permissions:
       contents: write
       pull-requests: write
-    defaults:
-      run:
-        shell: bash
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
@@ -30,8 +31,6 @@ jobs:
       - name: Set version in .nvmrc
         id: latest
         run: |
-          set -eu -o pipefail
-
           # Ensure jq is installed
           if ! command -v jq >/dev/null; then
             sudo apt-get update

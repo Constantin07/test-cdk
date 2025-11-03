@@ -352,7 +352,11 @@ jobs:
 
   run-tests:
     needs: [get-stack-prefix, cdk-diff, cdk-deploy]
-    if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
+    if: >-
+      ${{
+        !cancelled() && needs.cdk-diff.result == 'success' &&
+        !contains(github.event.pull_request.labels.*.name, 'no-release')
+      }}
     runs-on: ubuntu-24.04
     defaults:
       run:
