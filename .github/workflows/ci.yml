@@ -352,11 +352,7 @@ jobs:
 
   run-tests:
     needs: [get-stack-prefix, cdk-diff, cdk-deploy]
-    if: >-
-      ${{
-        !cancelled() && needs.cdk-diff.result == 'success' &&
-        !contains(github.event.pull_request.labels.*.name, 'no-release')
-      }}
+    if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -368,9 +364,35 @@ jobs:
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
 
+  check-release-label:
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    outputs:
+      no_release: ${{ steps.find_label.outputs.no_release }}
+    steps:
+      - name: Check if no-release label is set
+        id: find_label
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner, repo, commit_sha: context.sha
+            });
+            const pr = prs[0];
+            const hasNoRelease = pr?.labels?.some(l => l.name === 'no-release') ?? false;
+            core.info(`Associated PR: ${pr?.number ?? 'none'}, no-release=${hasNoRelease}`);
+            core.setOutput('no_release', hasNoRelease ? 'true' : 'false');
+
   release:
-    needs: [determine-version, run-tests]
-    if: ${{ always() && github.ref_name == 'main' && needs.run-tests.result == 'success' }}
+    needs: [determine-version, run-tests, check-release-label]
+    if: >-
+      ${{
+        always() && github.ref_name == 'main' &&
+        needs.run-tests.result == 'success' &&
+        needs.check-release-label.outputs.no_release != 'true'
+      }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write
