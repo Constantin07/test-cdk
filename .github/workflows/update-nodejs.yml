@@ -12,7 +12,7 @@ concurrency:
 
 defaults:
   run:
-    shell: bash -euo pipefail {0}
+    shell: bash
 
 jobs:
   update:
