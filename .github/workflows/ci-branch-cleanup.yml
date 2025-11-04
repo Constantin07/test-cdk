@@ -12,6 +12,9 @@ env:
   python_version: 3.13
   working_directory: hello-cdk
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+
 permissions:
   contents: read
   id-token: write

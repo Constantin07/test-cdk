@@ -20,7 +20,7 @@ env:
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 concurrency:
-  group: ci-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
 
 permissions: read-all
 
