@@ -54,6 +54,8 @@ repos:
     rev: v8.28.0
     hooks:
       - id: gitleaks
+        args:
+          - "--config=.gitleaks.toml"
 
   - repo: local
     hooks:

@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Fetch all history
 
       - name: Setup tooling
         uses: ./.github/actions/setup
