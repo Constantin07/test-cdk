@@ -58,11 +58,11 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
                 command = [
                     "bash", "-c",
                     # install deps
-                    "pip3 install -r requirements.txt -t /asset-output && "
-                    "cp -a . /asset-output && "
+                    "pip3 install -r requirements.txt -t /asset-output && " +
+                    "cp -a . /asset-output && " +
                     # prune unwanted files from the bundle
-                    "rm -rf /asset-output/tests && "
-                    "find /asset-output -type d -name '__pycache__' -prune -exec rm -rf {} + && "
+                    "rm -rf /asset-output/tests && " +
+                    "find /asset-output -type d -name '__pycache__' -prune -exec rm -rf {} + && " +
                     "find /asset-output -type f -name '*.pyc' -delete"
                 ],
             ),
