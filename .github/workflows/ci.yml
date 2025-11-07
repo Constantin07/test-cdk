@@ -385,12 +385,41 @@ jobs:
             core.info(`Associated PR: ${pr?.number ?? 'none'}, no-release=${hasNoRelease}`);
             core.setOutput('no_release', hasNoRelease ? 'true' : 'false');
 
-  release:
-    needs: [determine-version, run-tests, check-release-label]
+  tag-version:
+    needs: [determine-version, run-tests]
     if: >-
       ${{
         always() && github.ref_name == 'main' &&
-        needs.run-tests.result == 'success' &&
+        needs.run-tests.result == 'success'
+      }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v5
+
+      - name: Get new tag
+        run: echo "NEW_TAG=${{ needs.determine-version.outputs.next_version }}" >> $GITHUB_ENV
+
+      - name: Set up git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create and push Release Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag "$NEW_TAG"
+          git push origin tag "$NEW_TAG"
+
+  release:
+    needs: [determine-version, tag-version, check-release-label]
+    if: >-
+      ${{
+        always() && github.ref_name == 'main' &&
+        needs.tag-version.result == 'success' &&
         needs.check-release-label.outputs.no_release != 'true'
       }}
     runs-on: ubuntu-24.04
