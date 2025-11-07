@@ -1,4 +1,3 @@
-# Title for the gitleaks configuration file.
 title = "Gitleaks configuration"
 
 [extend]
