@@ -32,16 +32,16 @@ updates:
       prod-deps:
         dependency-type: "production"
         patterns:
-          - "aws-cdk-lib*"
-          - "aws-cdk.cloud-assembly-schema*"
-          - "constructs*"
-          - "jsii*"
-          - "ruamel.yaml*"
+          - aws-cdk-lib
+          - aws-cdk.cloud-assembly-schema
+          - constructs
+          - jsii
+          - ruamel.yaml
       dev-deps:
         dependency-type: "development"
         patterns:
-          - "pytest*"
-          - "pylint*"
+          - pytest
+          - pylint
     allow:
       - dependency-type: "all"  # includes dev deps too
     open-pull-requests-limit: 10
