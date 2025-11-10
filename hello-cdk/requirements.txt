@@ -1,5 +1,5 @@
-aws-cdk-lib==2.222.0
+aws-cdk-lib==2.223.0
 aws-cdk.cloud-assembly-schema==48.18.0
 constructs>=10.0.0,<11.0.0
-jsii==1.118.0
+jsii==1.119.0
 ruamel.yaml==0.18.16
