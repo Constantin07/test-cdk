@@ -47,12 +47,12 @@ jobs:
         if: ${{ steps.latest.outputs.major == 'v24' && steps.current.outputs.version != steps.latest.outputs.version }}
         uses: peter-evans/create-pull-request@v7
         with:
-          title: "Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
+          title: "chore: Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
+          commit-message: "chore: Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
           author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
           sign-commits: true
-          branch: update-nodejs-${{ steps.latest.outputs.version }}
+          branch: chore/update-nodejs-${{ steps.latest.outputs.version }}
           add-paths: .nvmrc
           body: |
             This PR updates the Node.js version in `.nvmrc` from `${{ steps.current.outputs.version }}` to `${{ steps.latest.outputs.version }}`.
