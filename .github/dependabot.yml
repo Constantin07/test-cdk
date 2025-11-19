@@ -9,6 +9,7 @@ updates:
     labels:
       - dependencies
       - github-actions
+      - no-release
 
   # Maintain dependencies for Node.js
   - package-ecosystem: npm
