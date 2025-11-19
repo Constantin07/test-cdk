@@ -3,6 +3,7 @@ SHELL := /usr/bin/env bash
 PIP ?= pip3
 
 PYTHON_VERSION := 3.13
+ARTIFACT_VERSION ?= ""
 
 .PHONY: checkOSDependencies
 checkOSDependencies:
@@ -24,10 +25,10 @@ lint:
 		pylint --recursive=y .
 
 package:
-		rm -f lambda.zip
+		rm -f lambda-${ARTIFACT_VERSION}.zip
 		pushd hello_cdk/lambda_src && \
-		zip -9r lambda.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" && \
-		mv lambda.zip ../../ && \
+		zip -9r lambda-${ARTIFACT_VERSION}.zip ./ -x "*.venv*" "tests/*" requirements*.txt "*/__pycache__/*" "*__pycache__*" && \
+		mv lambda-${ARTIFACT_VERSION}.zip ../../ && \
 		popd
 
 .PHONY: synth
@@ -49,4 +50,4 @@ deploy:
 .PHONY: clean
 clean:
 		$(info Destroying environment ...)
-		rm -rf ./.venv ./cdk.out lambda.zip
+		rm -rf ./.venv ./cdk.out lambda-*.zip

@@ -86,13 +86,13 @@ jobs:
       # Not required as CDK creates a deployment package automatically
       - name: Generate Lambda Package
         shell: bash
-        run: make package
+        run: make package ARTIFACT_VERSION=${{ needs.determine-version.outputs.next_version }}
 
       - name: Upload Lambda package as Artifact
         uses: actions/upload-artifact@v5
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
-          path: ${{ env.working_directory }}/lambda.zip
+          path: ${{ env.working_directory }}/lambda-${{ needs.determine-version.outputs.next_version }}.zip
           if-no-files-found: error
 
   security-scan:
@@ -444,4 +444,4 @@ jobs:
             --notes-file=CHANGELOG.md \
             --latest \
             --verify-tag \
-            ./lambda.zip
+            ./lambda-*.zip
