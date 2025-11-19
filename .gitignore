@@ -28,6 +28,7 @@ CHANGELOG.md
 
 # Lambda packages
 lambda.zip
+lambda-*.zip
 
 # Checkov
 **/results.sarif
