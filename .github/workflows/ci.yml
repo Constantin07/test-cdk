@@ -65,8 +65,6 @@ jobs:
 
       - name: Run Unit Tests
         run: pytest -v
-        env:
-          PYTHONWARNINGS: "ignore:Typeguard cannot check.*protocol:UserWarning"
 
   build:
     needs: [determine-version, run-unit-tests]
@@ -124,8 +122,6 @@ jobs:
       - name: Run CDK synth
         run: |
           npx cdk synth --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci
-        env:
-          PYTHONWARNINGS: "ignore:Typeguard cannot check.*protocol:UserWarning"
 
       - name: Run Checkov action
         uses: bridgecrewio/checkov-action@master
