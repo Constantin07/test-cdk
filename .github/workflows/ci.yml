@@ -429,6 +429,13 @@ jobs:
           OUTPUT: CHANGELOG.md
           GITHUB_REPO: ${{ github.repository }}
 
+      - name: Download Lambda package
+        uses: actions/download-artifact@v6
+        with:
+          name: lambda-${{ needs.determine-version.outputs.next_version }}
+
+      - run: ls -la ./
+
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -438,4 +445,5 @@ jobs:
             --repo="$GITHUB_REPOSITORY" \
             --notes-file=CHANGELOG.md \
             --latest \
-            --verify-tag
+            --verify-tag \
+            ./lambda-${{ needs.determine-version.outputs.next_version }}*
