@@ -7,7 +7,7 @@ on:
         description: The GitVersion version to install
         required: false
         type: string
-        default: 6.4.x
+        default: 6.5.x
 
     outputs:
       next_version:
