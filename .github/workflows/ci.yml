@@ -434,8 +434,6 @@ jobs:
         with:
           name: lambda-${{ needs.determine-version.outputs.next_version }}
 
-      - run: ls -la ./
-
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -446,4 +444,4 @@ jobs:
             --notes-file=CHANGELOG.md \
             --latest \
             --verify-tag \
-            ./lambda-${{ needs.determine-version.outputs.next_version }}*
+            ./lambda.zip
