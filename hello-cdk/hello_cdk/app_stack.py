@@ -17,6 +17,7 @@ from aws_cdk import (
 from constructs import Construct
 
 class AppStack(Stack):                  # pylint: disable=missing-class-docstring
+    # pylint: disable=too-many-locals
     def __init__(self, scope: Construct, id: str, config, network_stack, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
 
@@ -48,6 +49,26 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             retention = logs.RetentionDays.ONE_DAY,
             log_group_class = logs.LogGroupClass.STANDARD,
             removal_policy = RemovalPolicy.DESTROY
+        )
+
+        # IAM Role for Lambda function
+        role = iam.Role(
+            self,
+            id = "LambdaRole",
+            role_name = f"{id}-LambdaRole",
+            assumed_by = iam.ServicePrincipal("lambda.amazonaws.com"),
+        )
+
+        # Attach the basic execution policy explicitly
+        role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "service-role/AWSLambdaBasicExecutionRole"
+            )
+        )
+        role.add_managed_policy(
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "service-role/AWSLambdaVPCAccessExecutionRole"
+            )
         )
 
         # Lambda code
@@ -87,6 +108,7 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             vpc_subnets = ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
             security_groups = [network_stack.app_security_group],
             code = code,
+            role = role,
             tracing = _lambda.Tracing.DISABLED, # cost savings
             application_log_level_v2 = _lambda.ApplicationLogLevel.INFO,
             logging_format = _lambda.LoggingFormat.JSON
@@ -103,6 +125,9 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             version=version
         )
 
+        # Function URL on the alias (not on my_function)
+        alias_url = alias.add_function_url(auth_type=_lambda.FunctionUrlAuthType.NONE)
+
         # Add permissions to the alias
         alias.add_permission(
             "InvokeFromApiGw",
@@ -111,16 +136,12 @@ class AppStack(Stack):                  # pylint: disable=missing-class-docstrin
             source_account = Stack.of(self).account,
         )
 
-        # Define the Lambda function URL resource
-        my_function_url = my_function.add_function_url(
-            auth_type = _lambda.FunctionUrlAuthType.NONE,
-        )
-
         # Add dependencies
         my_function.node.add_dependency(log_group)
         my_function.node.add_dependency(queue)
+        my_function.node.add_dependency(role)
 
         # Define a CloudFormation output(s)
-        CfnOutput(self, "FunctionUrl", value = my_function_url.url,
+        CfnOutput(self, "FunctionUrl", value = alias_url.url,
             export_name = f"{id}-FunctionUrl")
         CfnOutput(self, "SqsURL", value = queue.queue_url, export_name = f"{id}-SqsURL")
