@@ -34,7 +34,7 @@ jobs:
       stack_prefix: ${{ steps.stack_prefix.outputs.prefix }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Determine Stack prefix
         id: stack_prefix
@@ -54,7 +54,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -74,7 +74,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -109,7 +109,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -153,7 +153,7 @@ jobs:
       has_changes: ${{ steps.diff.outputs.has_changes }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -263,7 +263,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -332,7 +332,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup tooling
         uses: ./.github/actions/setup
@@ -359,7 +359,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Run some tests
         run: echo "Run some E2E tests against deployed resources. TODO"
@@ -399,7 +399,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0    # Fetch full history
           fetch-tags: true  # Fetch tags too
