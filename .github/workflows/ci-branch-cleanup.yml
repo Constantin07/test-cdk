@@ -30,7 +30,7 @@ jobs:
         working-directory: ${{ env.working_directory }}
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Determine Stack prefix
         id: stack_prefix
