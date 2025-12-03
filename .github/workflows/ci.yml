@@ -355,6 +355,8 @@ jobs:
     uses: ./.github/workflows/publish-deployment-logs.yml
     permissions:
       contents: write
+      pages: write
+      id-token: write
     with:
       environment: 'dev'
       version: ${{ needs.determine-version.outputs.next_version }}
