@@ -19,6 +19,17 @@ concurrency:
   group: gh-pages
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+env:
+  BRANCH: gh-pages      # GH Pages branch
+  FILE: 'docs/index.md'
+  ENV_NAME: ${{ inputs.environment }}
+  VERSION: ${{ inputs.version }}
+  ACTOR: ${{ github.triggering_actor || github.actor }}
+
 jobs:
   publish-to-github-pages:
     runs-on: ubuntu-24.04
@@ -26,7 +37,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
         with:
-          ref: gh-pages     # GH Pages branch
+          ref: ${{ env.BRANCH }}
           persist-credentials: true
           fetch-depth: 1
 
@@ -34,3 +45,34 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
+
+      - name: Update deployment logs
+        run: |
+          DATE_UTC="$(date -u +"%Y-%m-%d %H:%M:%SZ")"
+          NEWROW="| ${ENV_NAME} | ${VERSION} | ${ACTOR} | ${DATE_UTC} |"
+
+          if [[ ! -f "$FILE" || ! -s "$FILE" ]]; then
+            cat > "$FILE" <<'TABLE'
+          # Deployment Log
+          | Environment | Version | Actor | Date (UTC) |
+          |---|---|---:|---|
+          TABLE
+          fi
+
+          tmp="$(mktemp)"
+          awk -v row="$NEWROW" '
+            BEGIN{inserted=0}
+            /^\|---\|---\|---:\|---\|$/ && inserted==0 { print; print row; inserted=1; next }
+            { print }
+            END{ if(inserted==0){ print row } }
+          ' "$FILE" > "$tmp"
+          mv "$tmp" "$FILE"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "docs(pages): Deployed ${VERSION} to ${ENV_NAME} by ${ACTOR}"
+          git push origin "$BRANCH"
