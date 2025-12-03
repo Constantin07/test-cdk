@@ -350,6 +350,12 @@ jobs:
           npx cdk deploy --context stack_prefix="${{ needs.get-stack-prefix.outputs.stack_prefix }}" --ci --all --require-approval=never | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> $GITHUB_STEP_SUMMARY
 
+  publish-deployment-logs:
+    needs: [determine-version, cdk-deploy]
+    uses: ./.github/workflows/publish-deployments.yml
+    with:
+      version: ${{ needs.determine-version.outputs.next_version }}
+
   run-tests:
     needs: [get-stack-prefix, cdk-diff, cdk-deploy]
     if: ${{ !cancelled() && needs.cdk-diff.result == 'success' }}
