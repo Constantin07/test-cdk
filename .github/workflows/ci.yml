@@ -352,7 +352,7 @@ jobs:
 
   publish-deployment-logs:
     needs: [determine-version, cdk-deploy]
-    uses: ./.github/workflows/publish-deployments.yml
+    uses: ./.github/workflows/publish-deployment-logs.yml
     with:
       version: ${{ needs.determine-version.outputs.next_version }}
 
