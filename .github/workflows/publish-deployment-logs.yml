@@ -1,0 +1,105 @@
+# Reusable workflow to publish deployment logs to GH Pages
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: The version being deployed
+        required: true
+        type: string
+      environment:
+        description: The deployment environment
+        required: true
+        type: string
+      status:
+        description: The deployment status
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+env:
+  BRANCH: gh-pages      # GH Pages branch
+  FILE: 'docs/index.md'
+  ENV_NAME: ${{ inputs.environment }}
+  VERSION: ${{ inputs.version }}
+  ACTOR: ${{ github.triggering_actor || github.actor }}
+  STATUS: ${{ inputs.status }}
+
+jobs:
+  publish-to-github-pages:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.BRANCH }}
+          persist-credentials: true
+          fetch-depth: 1
+
+      # - name: Dump GitHub context
+      #   env:
+      #     GITHUB_CONTEXT: ${{ toJson(github) }}
+      #   run: echo "$GITHUB_CONTEXT"
+
+      - name: Update deployment logs
+        run: |
+          DATE_UTC="$(date -u +"%Y-%m-%d %H:%M:%SZ")"
+          NEWROW="| ${ENV_NAME} | ${VERSION} | ${STATUS} | ${ACTOR} | ${DATE_UTC} |"
+
+          if [[ ! -f "$FILE" || ! -s "$FILE" ]]; then
+            cat > "$FILE" <<'TABLE'
+          ---
+          layout: default
+          ---
+
+          # Deployment Log
+
+          | Environment | Version | Status | Actor | Date (UTC) |
+          |---|---|---|---:|---|
+          TABLE
+          fi
+
+          tmp="$(mktemp)"
+          awk -v row="$NEWROW" '
+            BEGIN{inserted=0}
+            /^\|---\|---\|---\|---:\|---\|$/ && inserted==0 { print; print row; inserted=1; next }
+            { print }
+            END{ if(inserted==0){ print row } }
+          ' "$FILE" > "$tmp"
+          mv "$tmp" "$FILE"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "docs(pages): Deployed ${VERSION} to ${ENV_NAME} by ${ACTOR}"
+          git push origin "$BRANCH"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./docs
+          destination: ./_site
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4

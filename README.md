@@ -4,3 +4,5 @@
 [![CI branch cleanup](https://github.com/Constantin07/test-cdk/actions/workflows/ci-branch-cleanup.yml/badge.svg)](https://github.com/Constantin07/test-cdk/actions/workflows/ci-branch-cleanup.yml)
 
 # Test CDK Python project
+
+[Deployment Logs](https://constantin07.github.io/test-cdk/)
