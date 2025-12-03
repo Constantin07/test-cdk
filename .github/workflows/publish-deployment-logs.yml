@@ -1,4 +1,4 @@
-# Publish Deployment logs to GH Pages
+# Reusable workflow to publish deployment logs to GH Pages
 
 on:
   workflow_call:
