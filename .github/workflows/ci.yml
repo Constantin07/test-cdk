@@ -351,7 +351,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
 
   publish-deployment-logs:
-    needs: [determine-version, cdk-deploy]
+    needs: [determine-version]
     uses: ./.github/workflows/publish-deployment-logs.yml
     permissions:
       contents: write
