@@ -1,0 +1,39 @@
+name: Publish Deployment logs to GH Pages
+
+on:
+  deployment_status:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  publish-to-github-pages:
+    runs-on: ubuntu-24.04
+    if: ${{ contains(fromJSON('["dev"]'), github.event.deployment.environment) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages     # GH Pages branch
+          persist-credentials: true
+          fetch-depth: 1
+
+      - name: Display deployment metadata
+        run: |
+          echo "Environment Name: ${{ github.event.deployment.environment }}"
+          echo "Deployment state: ${{ github.event.deployment_status.state }}"
+          # The creator of the original deployment request
+          echo "Author/Triggered by: ${{ github.event.deployment.creator.login }}"
+          # The user who created the specific status update (often a machine/bot)
+          echo "Status Created by: ${{ github.event.deployment_status.creator.login }}"
+          echo "Created Datetime: ${{ github.event.deployment_status.created_at }}"
+          echo "Description: ${{ github.event.deployment_status.description }}"
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
