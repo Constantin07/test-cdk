@@ -360,6 +360,7 @@ jobs:
     with:
       environment: 'dev'
       version: ${{ needs.determine-version.outputs.next_version }}
+      status: ${{ needs.determine-version.result }}
 
   run-tests:
     needs: [get-stack-prefix, cdk-diff, cdk-deploy]

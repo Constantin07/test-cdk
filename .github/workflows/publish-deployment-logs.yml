@@ -11,6 +11,10 @@ on:
         description: The deployment environment
         required: true
         type: string
+      status:
+        description: The deployment status
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -31,6 +35,7 @@ env:
   ENV_NAME: ${{ inputs.environment }}
   VERSION: ${{ inputs.version }}
   ACTOR: ${{ github.triggering_actor || github.actor }}
+  SATUS: ${{ inputs.status }}
 
 jobs:
   publish-to-github-pages:
@@ -51,7 +56,7 @@ jobs:
       - name: Update deployment logs
         run: |
           DATE_UTC="$(date -u +"%Y-%m-%d %H:%M:%SZ")"
-          NEWROW="| ${ENV_NAME} | ${VERSION} | ${ACTOR} | ${DATE_UTC} |"
+          NEWROW="| ${ENV_NAME} | ${VERSION} | ${STATUS} | ${ACTOR} | ${DATE_UTC} |"
 
           if [[ ! -f "$FILE" || ! -s "$FILE" ]]; then
             cat > "$FILE" <<'TABLE'
@@ -61,15 +66,15 @@ jobs:
 
           # Deployment Log
 
-          | Environment | Version | Actor | Date (UTC) |
-          |---|---|---:|---|
+          | Environment | Version | Status | Actor | Date (UTC) |
+          |---|---|---|---:|---|
           TABLE
           fi
 
           tmp="$(mktemp)"
           awk -v row="$NEWROW" '
             BEGIN{inserted=0}
-            /^\|---\|---\|---:\|---\|$/ && inserted==0 { print; print row; inserted=1; next }
+            /^\|---\|---\|---\|---:\|---\|$/ && inserted==0 { print; print row; inserted=1; next }
             { print }
             END{ if(inserted==0){ print row } }
           ' "$FILE" > "$tmp"
