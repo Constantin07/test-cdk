@@ -35,7 +35,7 @@ env:
   ENV_NAME: ${{ inputs.environment }}
   VERSION: ${{ inputs.version }}
   ACTOR: ${{ github.triggering_actor || github.actor }}
-  SATUS: ${{ inputs.status }}
+  STATUS: ${{ inputs.status }}
 
 jobs:
   publish-to-github-pages:
