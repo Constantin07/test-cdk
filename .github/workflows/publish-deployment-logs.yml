@@ -7,6 +7,10 @@ on:
         description: The version being deployed
         required: true
         type: string
+      environment:
+        description: The deployment environment
+        required: true
+        type: string
 
 permissions:
   contents: write
