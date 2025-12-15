@@ -39,7 +39,7 @@ jobs:
       # Node.js version 25 is not yet LTS, so we only create PRs for version 24.x
       - name: Create pull request
         if: ${{ steps.latest.outputs.major == 'v24' && steps.current.outputs.version != steps.latest.outputs.version }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "chore: Bump Node.js from ${{ steps.current.outputs.version }} to ${{ steps.latest.outputs.version }}"
           token: ${{ secrets.GITHUB_TOKEN }}
