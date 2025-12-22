@@ -1,5 +1,5 @@
 aws-cdk-lib==2.233.0
-aws-cdk.cloud-assembly-schema==48.20.0
+aws-cdk.cloud-assembly-schema==49.2.0
 constructs>=10.0.0,<11.0.0
 typeguard==2.13.3       # pinned to avoid warnings with JSII runtime type checking
 jsii==1.121.0
