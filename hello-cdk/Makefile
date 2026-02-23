@@ -1,6 +1,6 @@
 SHELL := /bin/bash
-.SHELLFLAGS := -euo pipefail -c
-.ONESHELL:
+#.SHELLFLAGS := -euo pipefail -c
+#.ONESHELL:
 
 PIP ?= pip3
 
