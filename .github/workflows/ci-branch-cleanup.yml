@@ -22,7 +22,9 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-24.04
-    environment: dev-branch
+    environment:
+      name: dev-branch
+      deployment: false
     env:
       AWS_REGION:: ${{ vars.AWS_REGION }}
     defaults:
