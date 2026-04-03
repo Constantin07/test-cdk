@@ -98,7 +98,9 @@ jobs:
   security-scan:
     needs: [ get-stack-prefix, determine-version, build ]
     runs-on: ubuntu-24.04
-    environment: dev-branch
+    environment:
+      name: dev-branch
+      deployment: false
     permissions:
       contents: read
       id-token: write
@@ -139,7 +141,9 @@ jobs:
          github.ref_name == 'main'
       }}
     runs-on: ubuntu-24.04
-    environment: dev-branch
+    environment:
+      name: dev-branch
+      deployment: false
     permissions:
       contents: read
       id-token: write
@@ -252,7 +256,9 @@ jobs:
   cdk-drift:
     needs: [get-stack-prefix, determine-version, cdk-diff ]
     runs-on: ubuntu-24.04
-    environment: dev-branch
+    environment:
+      name: dev-branch
+      deployment: false
     permissions:
       contents: read
       id-token: write
