@@ -27,7 +27,7 @@ repos:
           - main
 
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.37.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         args:
@@ -35,7 +35,7 @@ repos:
         exclude: .chglog/config.yml
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.45.0
+    rev: v0.48.0
     hooks:
       - id: markdownlint
         exclude: .chglog/CHANGELOG.tpl.md
@@ -46,12 +46,12 @@ repos:
       - id: shellcheck
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.34.1
+    rev: 0.37.1
     hooks:
       - id: check-github-workflows
 
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.28.0
+    rev: v8.30.1
     hooks:
       - id: gitleaks
         args:
