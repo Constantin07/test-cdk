@@ -3,6 +3,7 @@ name: Update Node.js
 on:
   schedule:
     - cron: '0 10 * * 1'    # At 10:00 on Mondays
+      timezone: "Europe/London"
 
   workflow_dispatch:
 
