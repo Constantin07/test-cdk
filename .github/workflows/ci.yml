@@ -207,7 +207,7 @@ jobs:
 
       - name: Post CDK diff output in PR Comment
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -392,7 +392,7 @@ jobs:
     steps:
       - name: Check if no-release label is set
         id: find_label
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;
