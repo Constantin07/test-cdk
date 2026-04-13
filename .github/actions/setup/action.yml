@@ -59,7 +59,7 @@ runs:
 
     - name: Configure AWS credentials
       if: ${{ inputs.role_to_assume != 'none' }}
-      uses: aws-actions/configure-aws-credentials@v5
+      uses: aws-actions/configure-aws-credentials@v6
       with:
         aws-region: ${{ inputs.aws_region }}
         role-to-assume: ${{ inputs.role_to_assume }}
