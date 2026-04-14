@@ -64,7 +64,7 @@ jobs:
           install_dev_dependencies: true
 
       - name: Run Unit Tests
-        run: pytest -v --junitxml=pytest-results.xml --cov=. --cov-report=xml:coverage.xml
+        run: pytest -v --junitxml=pytest-results.xml --cov=. --cov-report=xml:coverage.xml --cov-branch
 
       - name: Test Report in summary
         uses: dorny/test-reporter@v3
