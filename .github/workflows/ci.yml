@@ -68,7 +68,7 @@ jobs:
 
       - name: Add test report to summary
         uses: dorny/test-reporter@v3
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           name: Test results
           reporter: python-xunit
@@ -76,7 +76,7 @@ jobs:
           path: pytest-results.xml
 
       - name: Add coverage to summary
-        if: always()
+        if: ${{ !cancelled() }}
         run: |
           coverage report -m > coverage.txt
           echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
