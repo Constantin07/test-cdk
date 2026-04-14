@@ -71,7 +71,7 @@ jobs:
         if: ${{ !cancelled() }}
         with:
           name: Test results
-          reporter: python-xunit
+          reporter: java-junit
           working-directory: ${{ env.working_directory }}
           path: pytest-results.xml
 
