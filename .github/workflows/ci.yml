@@ -66,6 +66,14 @@ jobs:
       - name: Run Unit Tests
         run: pytest -v --junitxml=pytest-results.xml --cov=. --cov-report=xml:coverage.xml
 
+      - name: Test Report in summary
+        uses: dorny/test-reporter@v3
+        if: ${{ !cancelled() }}
+        with:
+          name: Test results
+          reporter: python-xunit
+          path: pytest-results.xml
+
   build:
     needs: [determine-version, run-unit-tests]
     runs-on: ubuntu-24.04
