@@ -64,7 +64,7 @@ jobs:
           install_dev_dependencies: true
 
       - name: Run Unit Tests
-        run: pytest -v
+        run: pytest -v --junitxml=pytest-results.xml
 
   build:
     needs: [determine-version, run-unit-tests]
