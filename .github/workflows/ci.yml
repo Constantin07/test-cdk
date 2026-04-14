@@ -65,8 +65,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          pytest -v --junitxml=pytest-results.xml \
-          --cov=. --cov-report=xml:coverage.xml --cov-report=term-missing --cov-branch | tee coverage.txt
+          pytest -v --cov=. --cov-branch --junitxml=pytest-results.xml
 
       - name: Add test report to summary
         uses: dorny/test-reporter@v3
@@ -79,6 +78,7 @@ jobs:
 
       - name: Add coverage to summary
         run: |
+          coverage report -m > coverage.txt
           echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat coverage.txt >> $GITHUB_STEP_SUMMARY
