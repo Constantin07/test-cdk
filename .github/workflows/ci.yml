@@ -84,7 +84,6 @@ jobs:
           cat coverage.txt >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
-
   build:
     needs: [determine-version, run-unit-tests]
     runs-on: ubuntu-24.04
