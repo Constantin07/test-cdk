@@ -64,9 +64,11 @@ jobs:
           install_dev_dependencies: true
 
       - name: Run Unit Tests
-        run: pytest -v --junitxml=pytest-results.xml --cov=. --cov-report=xml:coverage.xml --cov-branch
+        run: |
+          pytest -v --junitxml=pytest-results.xml \
+          --cov=. --cov-report=xml:coverage.xml --cov-report=term-missing --cov-branch | tee coverage.txt
 
-      - name: Test Report in summary
+      - name: Add test report to summary
         uses: dorny/test-reporter@v3
         if: ${{ !cancelled() }}
         with:
@@ -74,6 +76,14 @@ jobs:
           reporter: python-xunit
           working-directory: ${{ env.working_directory }}
           path: pytest-results.xml
+
+      - name: Add coverage to summary
+        run: |
+          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat coverage.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
 
   build:
     needs: [determine-version, run-unit-tests]
