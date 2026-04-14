@@ -72,7 +72,8 @@ jobs:
         with:
           name: Test results
           reporter: python-xunit
-          path: ${{ env.working_directory }}/pytest-results.xml
+          working-directory: ${{ env.working_directory }}
+          path: pytest-results.xml
 
   build:
     needs: [determine-version, run-unit-tests]
