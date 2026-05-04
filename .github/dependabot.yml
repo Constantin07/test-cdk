@@ -11,6 +11,11 @@ updates:
       - github-actions
       - no-release
 
+  - package-ecosystem: pre-commit
+    directory: "/"
+    schedule:
+      interval: weekly
+
   # Maintain dependencies for Node.js
   - package-ecosystem: npm
     directory: /
