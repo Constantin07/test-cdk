@@ -25,7 +25,7 @@ jobs:
       next_version: ${{ steps.gitversion.outputs.SemVer }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0 # GitVersion needs full history
           ref: ${{ github.event.pull_request.head.sha }}
