@@ -1,3 +1,4 @@
+[![Release](https://img.shields.io/github/v/release/Constantin07/test-cdk)](https://github.com/Constantin07/test-cdk/releases)
 [![CodeQL](https://github.com/Constantin07/test-cdk/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Constantin07/test-cdk/actions/workflows/codeql.yml)
 [![Bootsrap CDK](https://github.com/Constantin07/test-cdk/actions/workflows/bootstrap-cdk.yml/badge.svg?branch=main)](https://github.com/Constantin07/test-cdk/actions/workflows/bootstrap-cdk.yml)
 [![CI pipeline](https://github.com/Constantin07/test-cdk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Constantin07/test-cdk/actions/workflows/ci.yml)
