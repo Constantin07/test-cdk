@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
       day: "monday"
     labels:
       - dependencies
@@ -14,7 +14,7 @@ updates:
   - package-ecosystem: pre-commit
     directory: "/"
     schedule:
-      interval: weekly
+      interval: monthly
       day: "monday"
     labels:
       - no-release
@@ -23,7 +23,7 @@ updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
+      interval: monthly
       day: "monday"
     labels:
       - dependencies
@@ -35,7 +35,7 @@ updates:
       - hello-cdk
       - hello-cdk/hello_cdk/lambda_src
     schedule:
-      interval: weekly
+      interval: monthly
       day: "monday"
     groups:
       prod-deps:
