@@ -51,6 +51,7 @@ updates:
         patterns:
           - pytest
           - pylint
+          - pytest-cov
     allow:
       - dependency-type: "all"  # includes dev deps too
     open-pull-requests-limit: 10
